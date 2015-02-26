@@ -1,0 +1,31 @@
+item.tolkientweaks:ring.name=The One Ring
+item.tolkientweaks:soul.name=Sauron's Soul
+item.tolkientweaks:houseKey.name=House Key
+item.tolkientweaks:schematicTool.name=Schematic Tool
+
+tile.tolkientweaks:houseBuilder0.name=Medium House Builder (North)
+tile.tolkientweaks:houseBuilder1.name=Medium House Builder (South)
+tile.tolkientweaks:houseBuilder2.name=Medium House Builder (East)
+tile.tolkientweaks:houseBuilder3.name=Medium House Builder (West)
+
+tile.tolkientweaks:houseBuilder4.name=Large House Builder (North)
+tile.tolkientweaks:houseBuilder5.name=Large House Builder (South)
+tile.tolkientweaks:houseBuilder6.name=Large House Builder (East)
+tile.tolkientweaks:houseBuilder7.name=Large House Builder (West)
+
+tile.tolkientweaks:houseBuilder8.name=Small House Builder (North)
+tile.tolkientweaks:houseBuilder9.name=Small House Builder (South)
+tile.tolkientweaks:houseBuilder10.name=Small House Builder (East)
+tile.tolkientweaks:houseBuilder11.name=Small House Builder (West)
+
+tile.tolkientweaks:houseBuilder12.name=Hobbit Hole Builder (North)
+tile.tolkientweaks:houseBuilder13.name=Hobbit Hole Builder (South)
+tile.tolkientweaks:houseBuilder14.name=Hobbit Hole Builder (East)
+tile.tolkientweaks:houseBuilder15.name=Hobbit Hole Builder (West)
+
+tile.tolkientweaks:structureBuilder.name=Structure Builder
+
+tile.tolkientweaks:smoker.name=Smoker
+
+msg.tolkienaddon.keySet.txt=Key bound to builder block
+msg.tolkienaddon.keyWrong.txt=§4Wrong Key!!!
