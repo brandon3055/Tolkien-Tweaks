@@ -22,4 +22,6 @@ public class HouseBuilderItemBlock extends ItemBlock {
 	public int getMetadata(int p_77647_1_) {
 		return p_77647_1_;
 	}
+
+
 }

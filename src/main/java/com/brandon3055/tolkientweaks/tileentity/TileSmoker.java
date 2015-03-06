@@ -1,6 +1,8 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
+import com.brandon3055.tolkientweaks.ModBlocks;
 import mods.railcraft.common.util.effects.EffectManager;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -44,6 +46,7 @@ public class TileSmoker extends TileEntity {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		block = compound.getInteger("Block");
+		if (Block.getBlockById(block) == ModBlocks.smoker) block = 0;
 		meta = compound.getInteger("Meta");
 	}
 

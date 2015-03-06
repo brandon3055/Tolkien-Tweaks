@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.blocks;
 
+import com.brandon3055.tolkientweaks.ModBlocks;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.tileentity.TileSmoker;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -59,7 +60,7 @@ public class Smoker extends Block {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
 		TileSmoker tile = world.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) world.getTileEntity(x, y, z) : null;
-		if (tile != null && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemBlock)
+		if (tile != null && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemBlock && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.smoker))
 		{
 			Block block = ((ItemBlock) player.getHeldItem().getItem()).field_150939_a;
 			if (block.isOpaqueCube() && block.renderAsNormalBlock())

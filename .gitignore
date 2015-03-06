@@ -5,6 +5,7 @@
 ## ForgeGradle
 /run
 /runServer
+/libs
 
 ## eclipse
 /eclipse

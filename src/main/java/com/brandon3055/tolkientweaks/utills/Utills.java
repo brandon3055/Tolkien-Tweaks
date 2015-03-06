@@ -1,6 +1,5 @@
 package com.brandon3055.tolkientweaks.utills;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
@@ -12,16 +11,6 @@ import net.minecraft.world.World;
  * Created by Brandon on 25/02/2015.
  */
 public class Utills {
-
-	public static final boolean isSinglePlayerServer()
-	{
-		return FMLCommonHandler.instance().getMinecraftServerInstance() != null;
-	}
-
-	public static final boolean isMultiPlayerServer()
-	{
-		return FMLCommonHandler.instance().getMinecraftServerInstance() == null;
-	}
 
 	public static MovingObjectPosition raytraceFromEntity(World world, Entity player, double range) {
 		float f = 1.0F;

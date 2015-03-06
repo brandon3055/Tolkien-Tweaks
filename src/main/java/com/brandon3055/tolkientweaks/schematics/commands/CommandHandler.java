@@ -24,13 +24,7 @@ public class CommandHandler extends CommandBase
 
 	static
 	{
-		registerSubCommand(CommandDelete.instance);
 		registerSubCommand(CommandHelp.instance);
-		registerSubCommand(CommandCreate.instance);
-		registerSubCommand(CommandList.instance);
-		registerSubCommand(CommandBlock.instance);
-		registerSubCommand(CommandPaste.instance);
-		registerSubCommand(CommandSend.instance);
 	}
 
 	public static void init(FMLServerStartingEvent event)

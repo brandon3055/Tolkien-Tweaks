@@ -1,7 +1,5 @@
 package com.brandon3055.tolkientweaks;
 
-import com.brandon3055.tolkientweaks.schematics.SchematicHandler;
-import com.brandon3055.tolkientweaks.schematics.commands.CommandHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -16,9 +14,9 @@ import java.util.Arrays;
 public class TolkienTweaks
 {
     public static final String MODID = "TolkienTweaks";
-	public static final String MODNAME = "TolkienTweaks";
+	public static final String MODNAME = "Tolkien Tweaks";
     public static final String RPREFIX = MODID.toLowerCase() + ":";
-    public static final String VERSION = "build-12";
+    public static final String VERSION = "build-14";
 
 	public static final String networkChannelName = "TTweaksNC";
 	public static SimpleNetworkWrapper network;
@@ -32,7 +30,7 @@ public class TolkienTweaks
 	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event)
 	{
-		CommandHandler.init(event);
+		//CommandHandler.init(event);
 	}
 
     @EventHandler
@@ -54,7 +52,6 @@ public class TolkienTweaks
         proxy.registerEntities();
         proxy.registerTileEntities();
 		proxy.initializeNetwork();
-		SchematicHandler.init(event);
     }
     
     @EventHandler

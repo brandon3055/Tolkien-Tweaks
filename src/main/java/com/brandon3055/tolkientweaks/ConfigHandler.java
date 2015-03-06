@@ -15,7 +15,6 @@ public class ConfigHandler {
 	public static int[] ringDisposalLocation;
 	public static int ringDisposalRadius;
 	public static String wrongLocationMessage;
-	public static int filePort;
 
 	public static void init(File confFile) {
 		if (config == null) {
@@ -30,7 +29,6 @@ public class ConfigHandler {
 			ringDisposalLocation = config.get(Configuration.CATEGORY_GENERAL, "Ring Disposal Location", new int[] {0, 0, 0}, "The centre point of the location where the ring must be destroyed Format:{x, y, z} if left as 0,0,0 the ring can be destroyed any wear").getIntList();
 			ringDisposalRadius = config.get(Configuration.CATEGORY_GENERAL, "Ring Disposal Radius", 0, "Sets the size of the area the ring can be destroyed in").getInt();
 			wrongLocationMessage = config.get(Configuration.CATEGORY_GENERAL, "Wrong Location Message", "This ring can not be destroyed by ordinary means", "This is the message that will be displayed if the player tries to destroy the ring in the wrong location").getString();
-			if (TolkienTweaks.proxy.isDedicatedServer()) filePort = config.get(Configuration.CATEGORY_GENERAL, "Schematic upload port", 25570, "This is the ports that will be used to upload schematic files to the server").getInt();
 		}
 		catch (Exception e) {
 			FMLLog.log(Level.ERROR, "Unable to load Config");
