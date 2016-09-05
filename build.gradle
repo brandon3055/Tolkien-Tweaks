@@ -17,12 +17,12 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "build-14"
+version = "build-29"
 group= "com.brandon3055.TolkienTweaks" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "TolkienTweaks"
 
 minecraft {
-    version = "1.7.10-10.13.2.1277"
+    version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "run"
 }
 
@@ -61,3 +61,5 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+sourceSets { main { output.resourcesDir = output.classesDir } }

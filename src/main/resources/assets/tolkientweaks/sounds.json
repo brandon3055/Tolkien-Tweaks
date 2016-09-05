@@ -1,3 +1,20 @@
 {
-   "ringdestroy": {"category": "master","sounds": [{"name": "ringdestroy","stream": false}]}
+  "ringdestroy": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "ringdestroy",
+        "stream": false
+      }
+    ]
+  },
+  "hypeHorn": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "hypeHorn",
+        "stream": false
+      }
+    ]
+  }
 }

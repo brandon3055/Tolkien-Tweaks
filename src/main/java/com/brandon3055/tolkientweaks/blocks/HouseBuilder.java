@@ -20,7 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -92,10 +91,10 @@ public class HouseBuilder extends Block {
 				TileEntitySign tile = world.getTileEntity(x, y, z) instanceof TileEntitySign ? (TileEntitySign) world.getTileEntity(x, y, z) : null;
 				if (tile != null)
 				{
-					tile.signText[0] = EnumChatFormatting.DARK_BLUE + "###############";
-					tile.signText[1] = EnumChatFormatting.DARK_RED + "Purchased By";
-					tile.signText[2] = EnumChatFormatting.DARK_GREEN + player.getCommandSenderName();
-					tile.signText[3] = EnumChatFormatting.DARK_BLUE + "###############";
+					tile.signText[0] = "###############";
+					tile.signText[1] = "Purchased By";
+					tile.signText[2] = player.getCommandSenderName();
+					tile.signText[3] = "###############";
 				}
 				switch (meta)
 				{

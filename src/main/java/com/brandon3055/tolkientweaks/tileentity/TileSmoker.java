@@ -46,7 +46,7 @@ public class TileSmoker extends TileEntity {
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		block = compound.getInteger("Block");
-		if (Block.getBlockById(block) == ModBlocks.smoker) block = 0;
+		if (Block.getBlockById(block) == ModBlocks.smoker || Block.getBlockById(block) == ModBlocks.camoChest) block = 0;
 		meta = compound.getInteger("Meta");
 	}
 

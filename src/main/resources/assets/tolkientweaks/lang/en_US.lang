@@ -3,6 +3,12 @@ item.tolkientweaks:soul.name=Sauron's Soul
 item.tolkientweaks:houseKey.name=House Key
 item.tolkientweaks:schematicTool.name=Schematic Tool
 
+item.tolkientweaks:palantir.name=Palantir
+item.tolkientweaks:palantirShard.name=Palantir Shard
+item.tolkientweaks:easternAllianceToken.name=Eastern Alliance Token
+item.tolkientweaks:westernAllianceToken.name=Western Alliance Token
+item.tolkientweaks:hypeHorn.name=Hype Horn
+
 tile.tolkientweaks:houseBuilder0.name=Medium House Builder (North)
 tile.tolkientweaks:houseBuilder1.name=Medium House Builder (South)
 tile.tolkientweaks:houseBuilder2.name=Medium House Builder (East)
@@ -27,5 +33,20 @@ tile.tolkientweaks:structureBuilder.name=Structure Builder
 
 tile.tolkientweaks:smoker.name=Smoker
 
+tile.tolkientweaks:camoChest.name=Camouflage Chest
+
+tile.tolkientweaks:camoKeystone.name=Camouflaged Key Stone
+
+tile.tolkientweaks:milestone.name=Milestone
+
+
+entity.TolkienTweaks.Backpack.name=Backpack
+
 msg.tolkienaddon.keySet.txt=Key bound to builder block
 msg.tolkienaddon.keyWrong.txt=§4Wrong Key!!!
+
+container.tt.camoChest=Camouflaged Chest
+
+info.tt.guiLane1.txt=Nothing to see here......
+info.tt.guiLane2.txt=This gui has not been altered in any way!
+info.tt.guiLane3.txt=If you were expecting other buttons here you must have just imagined them.

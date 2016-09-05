@@ -1,5 +1,8 @@
 package com.brandon3055.tolkientweaks;
 
+import com.brandon3055.tolkientweaks.client.gui.GuiHandler;
+import com.brandon3055.tolkientweaks.command.CommandMilestone;
+import com.brandon3055.tolkientweaks.command.CommandMilestoneConfig;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -10,13 +13,13 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 import java.util.Arrays;
 
-@Mod(modid = TolkienTweaks.MODID, name = TolkienTweaks.MODNAME,version = TolkienTweaks.VERSION, dependencies = "required-after:lotr;required-after:Railcraft")
+@Mod(modid = TolkienTweaks.MODID, name = TolkienTweaks.MODNAME,version = TolkienTweaks.VERSION, dependencies = "required-after:DraconicEvolution;required-after:BrandonsCore;required-after:lotr;required-after:Railcraft")
 public class TolkienTweaks
 {
     public static final String MODID = "TolkienTweaks";
 	public static final String MODNAME = "Tolkien Tweaks";
     public static final String RPREFIX = MODID.toLowerCase() + ":";
-    public static final String VERSION = "build-14";
+    public static final String VERSION = "build-29";
 
 	public static final String networkChannelName = "TTweaksNC";
 	public static SimpleNetworkWrapper network;
@@ -30,6 +33,8 @@ public class TolkienTweaks
 	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event)
 	{
+        event.registerServerCommand(new CommandMilestoneConfig());
+        event.registerServerCommand(new CommandMilestone());
 		//CommandHandler.init(event);
 	}
 
@@ -55,5 +60,8 @@ public class TolkienTweaks
     }
     
     @EventHandler
-    public void init(FMLInitializationEvent event) {proxy.registerListeners();}
+    public void init(FMLInitializationEvent event) {
+		proxy.registerListeners();
+		new GuiHandler();
+	}
 }

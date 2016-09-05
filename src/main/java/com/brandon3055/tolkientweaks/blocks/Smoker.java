@@ -56,11 +56,10 @@ public class Smoker extends Block {
 		return super.getIcon(blockAccess, x, y, z, p_149673_5_);
 	}
 
-
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
 		TileSmoker tile = world.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) world.getTileEntity(x, y, z) : null;
-		if (tile != null && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemBlock && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.smoker))
+		if (tile != null && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemBlock && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.smoker) && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.camoChest))
 		{
 			Block block = ((ItemBlock) player.getHeldItem().getItem()).field_150939_a;
 			if (block.isOpaqueCube() && block.renderAsNormalBlock())

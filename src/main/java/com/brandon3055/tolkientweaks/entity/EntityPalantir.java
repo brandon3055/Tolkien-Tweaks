@@ -18,34 +18,34 @@ import net.minecraftforge.event.entity.item.ItemExpireEvent;
 /**
  * Created by Brandon on 13/01/2015.
  */
-public class EntityRing extends EntityItem {
+public class EntityPalantir extends EntityItem {
 
 	private boolean onLava = false;
 	private int ticksOnLava = 0;
 	public EntityPlayer player = null;
 
-	public EntityRing(World par1World, double par2, double par4, double par6)
+	public EntityPalantir(World par1World, double par2, double par4, double par6)
 	{
 		super(par1World, par2, par4, par6);
 		this.isImmuneToFire = true;
 		this.lifespan = 72000;
 	}
 
-	public EntityRing(World par1World, double par2, double par4, double par6, ItemStack par8ItemStack)
+	public EntityPalantir(World par1World, double par2, double par4, double par6, ItemStack par8ItemStack)
 	{
 		this(par1World, par2, par4, par6);
 		this.setEntityItemStack(par8ItemStack);
 		this.lifespan = 72000;
 	}
 
-	public EntityRing(World par1World)
+	public EntityPalantir(World par1World)
 	{
 		super(par1World);
 		this.isImmuneToFire = true;
 		this.lifespan = 72000;
 	}
 
-	public EntityRing(World world, Entity original, ItemStack stack)
+	public EntityPalantir(World world, Entity original, ItemStack stack)
 	{
 		this(world, original.posX, original.posY, original.posZ);
 		if (original instanceof EntityItem) this.delayBeforeCanPickup = ((EntityItem)original).delayBeforeCanPickup;
@@ -96,7 +96,7 @@ public class EntityRing extends EntityItem {
 					EntityPlayer player = (EntityPlayer) worldObj.playerEntities.get(i);
 					if (getDistanceAtoB(player.posX, player.posY, player.posZ, posX, posY, posZ) < 20)
 					{
-						player.addChatComponentMessage(new ChatComponentText(ConfigHandler.wrongLocationMessage));
+						player.addChatComponentMessage(new ChatComponentText(ConfigHandler.wrongLocationMessagePalantir));
 					}
 				}
 			}
@@ -222,13 +222,13 @@ public class EntityRing extends EntityItem {
 					{
 						if (player != null)
 						{
-							EntityItem itemEntity = new EntityItem(worldObj, player.posX, player.posY, player.posZ, new ItemStack(ModItems.soul));
+							EntityItem itemEntity = new EntityItem(worldObj, player.posX, player.posY, player.posZ, new ItemStack(ModItems.palantirShard));
 							itemEntity.delayBeforeCanPickup = 0;
 							worldObj.spawnEntityInWorld(itemEntity);
 						}
 						else
 						{
-							EntityItem itemEntity = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(ModItems.soul));
+							EntityItem itemEntity = new EntityItem(worldObj, posX, posY, posZ, new ItemStack(ModItems.palantirShard));
 							itemEntity.delayBeforeCanPickup = 0;
 							worldObj.spawnEntityInWorld(itemEntity);
 						}
