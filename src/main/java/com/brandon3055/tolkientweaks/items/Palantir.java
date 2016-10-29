@@ -51,6 +51,7 @@ public class Palantir extends Item implements ICustomRender {
 		return newStack == null || oldStack == null || newStack.getItem() != oldStack.getItem() || slotChanged;
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerRenderer(Feature feature) {
 		ModelRegistryHelper.registerItemRenderer(this, new ItemRenderPalantir());

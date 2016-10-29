@@ -59,6 +59,7 @@ public class Ring extends Item implements ICustomRender {
         super.onUpdate(stack, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void registerRenderer(Feature feature) {
         ModelRegistryHelper.registerItemRenderer(this, new ItemRingRenderer());
