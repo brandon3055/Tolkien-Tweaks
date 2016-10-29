@@ -1,4 +1,4 @@
-package com.brandon3055.tolkientweaks.utills;
+package com.brandon3055.tolkientweaks.utils;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -21,11 +21,11 @@ public class TTWorldData extends WorldSavedData {
 
     public static Map<String, MilestoneMarker> getMap(World world){
 
-        if (!(world.mapStorage.loadData(TTWorldData.class, DATA_TAG) instanceof TTWorldData)){
-            world.mapStorage.setData(DATA_TAG, new TTWorldData(DATA_TAG));
+        if (!(world.getMapStorage().getOrLoadData(TTWorldData.class, DATA_TAG) instanceof TTWorldData)){
+            world.getMapStorage().setData(DATA_TAG, new TTWorldData(DATA_TAG));
         }
 
-        TTWorldData ttWorldData = (TTWorldData) world.mapStorage.loadData(TTWorldData.class, DATA_TAG);
+        TTWorldData ttWorldData = (TTWorldData) world.getMapStorage().getOrLoadData(TTWorldData.class, DATA_TAG);
 
         return ttWorldData.markers;
     }
@@ -34,11 +34,11 @@ public class TTWorldData extends WorldSavedData {
      * to remove a player from the map set y to -1
      * */
     public static void addMarker(World world, String user, int x, int y, int z, int dimension){
-        if (!(world.mapStorage.loadData(TTWorldData.class, DATA_TAG) instanceof TTWorldData)){
-            world.mapStorage.setData(DATA_TAG, new TTWorldData(DATA_TAG));
+        if (!(world.getMapStorage().getOrLoadData(TTWorldData.class, DATA_TAG) instanceof TTWorldData)){
+            world.getMapStorage().setData(DATA_TAG, new TTWorldData(DATA_TAG));
         }
 
-        TTWorldData ttWorldData = (TTWorldData) world.mapStorage.loadData(TTWorldData.class, DATA_TAG);
+        TTWorldData ttWorldData = (TTWorldData) world.getMapStorage().getOrLoadData(TTWorldData.class, DATA_TAG);
 
         if (ttWorldData.markers.containsKey(user)){
             ttWorldData.markers.remove(user);
@@ -63,7 +63,7 @@ public class TTWorldData extends WorldSavedData {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagList list = new NBTTagList();
 
         for (String name : markers.keySet()){
@@ -71,6 +71,7 @@ public class TTWorldData extends WorldSavedData {
         }
 
         compound.setTag("Milestones", list);
+        return compound;
     }
 
     public static class MilestoneMarker {

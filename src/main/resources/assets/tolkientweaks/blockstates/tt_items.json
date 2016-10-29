@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "builtin/generated",
+    "transform": "forge:default-item"
+  },
+  "variants": {
+    "type": {
+      "key": {"textures": {"layer0": "tolkientweaks:items/key"}},
+      "palantir_shard": {"textures": {"layer0": "tolkientweaks:items/palantir_shard"}},
+      "soul": {"textures": {"layer0": "tolkientweaks:items/soul"}},
+      "east_token": {"textures": {"layer0": "tolkientweaks:items/eastern_alliance_token"}},
+      "west_token": {"textures": {"layer0": "tolkientweaks:items/western_alliance_token"}},
+      "hype_horn": {"textures": {"layer0": "tolkientweaks:items/hype_horn"}}
+    }
+  }
+}

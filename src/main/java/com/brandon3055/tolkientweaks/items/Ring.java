@@ -1,9 +1,10 @@
 package com.brandon3055.tolkientweaks.items;
 
-import com.brandon3055.tolkientweaks.TolkienTweaks;
+import codechicken.lib.model.ModelRegistryHelper;
+import com.brandon3055.brandonscore.config.Feature;
+import com.brandon3055.brandonscore.config.ICustomRender;
+import com.brandon3055.tolkientweaks.client.rendering.ItemRingRenderer;
 import com.brandon3055.tolkientweaks.entity.EntityRing;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,45 +13,59 @@ import net.minecraft.world.World;
 /**
  * Created by Brandon on 13/01/2015.
  */
-public class Ring extends Item {
-	public Ring() {
-		this.setUnlocalizedName(TolkienTweaks.RPREFIX + "ring");
-		this.setMaxStackSize(1);
-		//this.setCreativeTab(CreativeTabs.tabMisc);
+public class Ring extends Item implements ICustomRender {
 
-		GameRegistry.registerItem(this, "ring");
-	}
+    public static float glow = 0;
 
-	@Override
-	public void registerIcons(IIconRegister p_94581_1_) {
+    public Ring() {
+        this.setMaxStackSize(1);
+    }
+//
+//	@Override
+//	public void registerIcons(IIconRegister p_94581_1_) {
+//
+//	}
 
-	}
+    @Override
+    public boolean hasCustomEntity(ItemStack stack) {
+        return true;
+    }
 
-	@Override
-	public boolean hasCustomEntity(ItemStack stack) {
-		return true;
-	}
+    @Override
+    public Entity createEntity(World world, Entity location, ItemStack itemstack) {
+        return new EntityRing(world, location, itemstack);
+    }
 
-	@Override
-	public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-		return new EntityRing(world, location, itemstack);
-	}
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return newStack == null || oldStack == null || newStack.getItem() != oldStack.getItem() || slotChanged;
+    }
 
-	@Override
-	public void onUpdate(ItemStack stack, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+    @Override
+    public void onUpdate(ItemStack stack, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
+//        LogHelper.info("Update "+stack.hasTagCompound());
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Glow")) {
+            if (stack.getTagCompound().getFloat("Glow") > 0f) {
+                stack.getTagCompound().setFloat("Glow", stack.getTagCompound().getFloat("Glow") - 0.01f);
+                glow = stack.getTagCompound().getFloat("Glow");
+                stack.getTagCompound().setInteger("ETicks", 0);
+            }
+            else {
+                stack.setTagCompound(null);
+                glow = 0;
+            }
+        }
 
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Glow"))
-		{
-			if (stack.getTagCompound().getFloat("Glow") > 0f){
-				stack.getTagCompound().setFloat("Glow", stack.getTagCompound().getFloat("Glow") - 0.01f);
-				stack.getTagCompound().setInteger("ETicks", 0);
-			}
-			else
-			{
-				stack.setTagCompound(null);
-			}
-		}
+        super.onUpdate(stack, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
+    }
 
-		super.onUpdate(stack, p_77663_2_, p_77663_3_, p_77663_4_, p_77663_5_);
-	}
+    @Override
+    public void registerRenderer(Feature feature) {
+        ModelRegistryHelper.registerItemRenderer(this, new ItemRingRenderer());
+    }
+
+    @Override
+    public boolean registerNormal(Feature feature) {
+        return false;
+    }
 }

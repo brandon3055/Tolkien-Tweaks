@@ -1,79 +1,83 @@
 package com.brandon3055.tolkientweaks.blocks;
 
-import com.brandon3055.tolkientweaks.ModBlocks;
-import com.brandon3055.tolkientweaks.TolkienTweaks;
+import codechicken.lib.colour.EnumColour;
 import com.brandon3055.tolkientweaks.tileentity.TileSmoker;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import com.brandon3055.tolkientweaks.tileentity.TileSmokerClient;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
  * Created by Brandon on 8/02/2015.
  */
-public class Smoker extends Block {
-	public Smoker() {
-		super(Material.rock);
-		this.setBlockTextureName(TolkienTweaks.RPREFIX + "smoker");
-		this.setBlockName(TolkienTweaks.RPREFIX + "smoker");
-		this.setHardness(10F);
-		this.setResistance(100F);
+public class Smoker extends ChameleonBlock<TileSmoker> {
 
-		GameRegistry.registerBlock(this, "smoker");
-	}
+    public Smoker() {
+        super();
+        this.setHardness(10F);
+        this.setResistance(100F);
+    }
 
-	@Override
-	public boolean hasTileEntity(int metadata) {
-		return true;
-	}
+    @Override
+    public TileSmoker createChameleonTile(World worldIn, int meta) {
+        return worldIn.isRemote ? new TileSmokerClient() : new TileSmoker();
+    }
 
-	@Override
-	public TileEntity createTileEntity(World world, int metadata) {
-		return new TileSmoker();
-	}
+    //
+//	@Override
+//	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int p_149673_5_) {
+//		TileSmoker tile = blockAccess.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) blockAccess.getTileEntity(x, y, z) : null;
+//		if (tile != null)
+//		{
+//			return Block.getBlockById(tile.block).getIcon(blockAccess, x, y, z, p_149673_5_);
+//		}
+//		return super.getIcon(blockAccess, x, y, z, p_149673_5_);
+//	}
 
-	@Override
-	public void registerBlockIcons(IIconRegister p_149651_1_) {
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (world.isRemote) {
+            return true;
+        }
 
-	}
+        TileEntity tile = world.getTileEntity(pos);
 
-	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int p_149673_5_) {
-		TileSmoker tile = blockAccess.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) blockAccess.getTileEntity(x, y, z) : null;
-		if (tile != null)
-		{
-			return Block.getBlockById(tile.block).getIcon(blockAccess, x, y, z, p_149673_5_);
-		}
-		return super.getIcon(blockAccess, x, y, z, p_149673_5_);
-	}
+        if (tile instanceof TileSmoker && heldItem != null) {
+            for (int id : OreDictionary.getOreIDs(heldItem)) {
+                String oreName = OreDictionary.getOreName(id);
+                if (oreName.startsWith("dye") && oreName.length() > 3) {
+                    for (EnumColour colour : EnumColour.values()) {
+                        if (oreName.equals(colour.getOreDictionaryName())) {
+                            ((TileSmoker) tile).colour.value = (byte) colour.ordinal();
+                            ((TileSmoker) tile).updateBlock();
+                            ((TileSmoker) tile).detectAndSendChanges();
+                            return true;
+                        }
+                    }
+                }
+            }
 
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-		TileSmoker tile = world.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) world.getTileEntity(x, y, z) : null;
-		if (tile != null && player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemBlock && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.smoker) && player.getHeldItem().getItem() != Item.getItemFromBlock(ModBlocks.camoChest))
-		{
-			Block block = ((ItemBlock) player.getHeldItem().getItem()).field_150939_a;
-			if (block.isOpaqueCube() && block.renderAsNormalBlock())
-			{
-				tile.block = Block.getIdFromBlock(block);
-				tile.meta = player.getHeldItem().stackSize;
-				world.markBlockForUpdate(x, y, z);
-			}
-		}
-		return true;
-	}
+            if (player.capabilities.isCreativeMode) {
+                return ((TileSmoker) tile).attemptSetFromStack(heldItem);
+            }
+        }
 
-	@Override
-	public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_) {
-		return null;
-	}
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return null;
+    }
 }

@@ -1,10 +1,7 @@
 package com.brandon3055.tolkientweaks;
 
-import cpw.mods.fml.common.FMLLog;
+import com.brandon3055.tolkientweaks.utils.LogHelper;
 import net.minecraftforge.common.config.Configuration;
-import org.apache.logging.log4j.Level;
-
-import java.io.File;
 
 /**
  * Created by Brandon on 13/01/2015.
@@ -18,15 +15,14 @@ public class ConfigHandler {
 	public static String wrongLocationMessage;
 	public static String wrongLocationMessagePalantir;
 
-	public static void init(File confFile) {
+	public static void init(Configuration confFile) {
 		if (config == null) {
-			config = new Configuration(confFile);
+			config = confFile;
 			syncConfig();
 		}
 	}
 
 	public static void syncConfig() {
-
 		try {
 			ringDisposalLocation = config.get(Configuration.CATEGORY_GENERAL, "Ring Disposal Location", new int[] {0, 0, 0}, "The centre point of the location where the ring must be destroyed Format:{x, y, z} if left as 0,0,0 the ring can be destroyed any wear").getIntList();
 			ringDisposalRadius = config.get(Configuration.CATEGORY_GENERAL, "Ring Disposal Radius", 0, "Sets the size of the area the ring can be destroyed in").getInt();
@@ -35,7 +31,7 @@ public class ConfigHandler {
 		    milestoneCoolDown = config.get(Configuration.CATEGORY_GENERAL, "Switch milestone coolDown (in seconds)", 1800).getInt(1800);
         }
 		catch (Exception e) {
-			FMLLog.log(Level.ERROR, "Unable to load Config");
+			LogHelper.error("Unable to load Config");
 			e.printStackTrace();
 		}
 		finally {

@@ -1,9 +1,6 @@
 package com.brandon3055.tolkientweaks.items;
 
-import com.brandon3055.tolkientweaks.TolkienTweaks;
-import com.brandon3055.tolkientweaks.entity.EntityIndestructibleItem;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import com.brandon3055.tolkientweaks.entity.EntityPersistentItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,18 +11,18 @@ import net.minecraft.world.World;
  */
 public class Soul extends Item {
 	public Soul() {
-		this.setUnlocalizedName(TolkienTweaks.RPREFIX + "soul");
 		this.setMaxStackSize(1);
-		GameRegistry.registerItem(this, "soul");
 	}
 
-	@Override
-	public void registerIcons(IIconRegister iconRegister) {
-		itemIcon = iconRegister.registerIcon(TolkienTweaks.RPREFIX + "soul");
-	}
+//	@Override
+//	public void registerIcons(IIconRegister iconRegister) {
+//		itemIcon = iconRegister.registerIcon(TolkienTweaks.RPREFIX + "soul");
+//	}
+
+
 
 	@Override
-	public boolean hasEffect(ItemStack par1ItemStack, int pass) {
+	public boolean hasEffect(ItemStack stack) {
 		return true;
 	}
 
@@ -36,6 +33,6 @@ public class Soul extends Item {
 
 	@Override
 	public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-		return new EntityIndestructibleItem(world, location, itemstack);
+		return new EntityPersistentItem(world, location, itemstack);
 	}
 }

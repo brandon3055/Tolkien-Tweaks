@@ -5,10 +5,12 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  * Created by brandon3055 on 3/06/2016.
@@ -30,7 +32,7 @@ public class CommandMilestoneConfig extends CommandBase {
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length != 2){
             help(sender);
             return;
@@ -42,7 +44,7 @@ public class CommandMilestoneConfig extends CommandBase {
         for (int x = (int)player.posX - 5; x < player.posX + 10; x++){
             for (int y = (int)player.posY - 5; y < player.posY + 10; y++){
                 for (int z = (int)player.posZ - 5; z < player.posZ + 10; z++){
-                    TileEntity tileEntity = sender.getEntityWorld().getTileEntity(x, y, z);
+                    TileEntity tileEntity = sender.getEntityWorld().getTileEntity(new BlockPos(x, y, z));
                     if (tileEntity instanceof TileMilestone){
                         tile = (TileMilestone)tileEntity;
                         break;
@@ -58,14 +60,16 @@ public class CommandMilestoneConfig extends CommandBase {
         }
 
         if (args[0].equals("name")){
-            tile.markerName = args[1];
-            sender.addChatMessage(new ChatComponentText("Name set!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
-            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            tile.markerName.value = args[1];
+            sender.addChatMessage(new TextComponentString("Name set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
+//            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            tile.updateBlock();
         }
         else if (args[0].equals("cooldown")){
             tile.coolDown = Integer.parseInt(args[1]) * 20;
-            sender.addChatMessage(new ChatComponentText("Cool Down set!").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
-            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            sender.addChatMessage(new TextComponentString("Cool Down set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
+//            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            tile.updateBlock();
         }
         else {
             help(sender);
@@ -73,8 +77,8 @@ public class CommandMilestoneConfig extends CommandBase {
     }
 
     private void help(ICommandSender sender){
-        sender.addChatMessage(new ChatComponentText("/milestone"));
-        sender.addChatMessage(new ChatComponentText("/milestone name [Name]"));
-        sender.addChatMessage(new ChatComponentText("/milestone cooldown [seconds]"));
+        sender.addChatMessage(new TextComponentString("/milestone"));
+        sender.addChatMessage(new TextComponentString("/milestone name [Name]"));
+        sender.addChatMessage(new TextComponentString("/milestone cooldown [seconds]"));
     }
 }

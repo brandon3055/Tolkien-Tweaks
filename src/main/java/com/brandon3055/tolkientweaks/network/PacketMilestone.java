@@ -3,21 +3,22 @@ package com.brandon3055.tolkientweaks.network;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
 import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
-import com.brandon3055.tolkientweaks.utills.TTWorldData;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.brandon3055.tolkientweaks.utils.TTWorldData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 13/06/2016.
@@ -94,11 +95,11 @@ public class PacketMilestone implements IMessage {
 
                     EntityPlayerMP playerMP = ctx.getServerHandler().playerEntity;
 
-                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getCommandSenderName())) {
+                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getName())) {
                         return new PacketMilestone(ERROR, "No milestone set!");
                     }
 
-                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getCommandSenderName());
+                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getName());
 
                     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
                     World world = server.worldServerForDimension(marker.dimension);
@@ -107,14 +108,14 @@ public class PacketMilestone implements IMessage {
                         return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
                     }
 
-                    TileEntity tile = world.getTileEntity(marker.x, marker.y, marker.z);
+                    TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
                     if (!(tile instanceof TileMilestone)) {
                         return new PacketMilestone(ERROR, "Did not find your bound milestone...");
                     }
 
-                    int time = ((TileMilestone) tile).cooldowns.containsKey(playerMP.getCommandSenderName()) ? (((TileMilestone) tile).cooldowns.get(playerMP.getCommandSenderName()) + ((TileMilestone) tile).coolDown) - ForgeEventHandler.tick : 0;
-                    return new PacketMilestone(NAME, ((TileMilestone) tile).markerName, time);
+                    int time = ((TileMilestone) tile).cooldowns.containsKey(playerMP.getName()) ? (((TileMilestone) tile).cooldowns.get(playerMP.getName()) + ((TileMilestone) tile).coolDown) - ForgeEventHandler.tick : 0;
+                    return new PacketMilestone(NAME, ((TileMilestone) tile).markerName.value, time);
 
                     //endregion
                 } else if (message.function == TP) {
@@ -122,11 +123,11 @@ public class PacketMilestone implements IMessage {
 
                     EntityPlayerMP playerMP = ctx.getServerHandler().playerEntity;
 
-                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getCommandSenderName())) {
+                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getName())) {
                         return new PacketMilestone(ERROR, "No milestone set!");
                     }
 
-                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getCommandSenderName());
+                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getName());
 
                     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
                     World world = server.worldServerForDimension(marker.dimension);
@@ -135,7 +136,7 @@ public class PacketMilestone implements IMessage {
                         return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
                     }
 
-                    TileEntity tile = world.getTileEntity(marker.x, marker.y, marker.z);
+                    TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
                     if (!(tile instanceof TileMilestone)) {
                         return new PacketMilestone(ERROR, "Did not find your bound milestone...");
@@ -187,7 +188,7 @@ public class PacketMilestone implements IMessage {
                     ((GuiMilestone) Minecraft.getMinecraft().currentScreen).error = message.message;
                 }
                 else {
-                    Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(message.message));
+                    Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(message.message));
                 }
             }
         }

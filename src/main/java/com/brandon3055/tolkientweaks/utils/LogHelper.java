@@ -1,7 +1,7 @@
-package com.brandon3055.tolkientweaks.utills;
+package com.brandon3055.tolkientweaks.utils;
 
 import com.brandon3055.tolkientweaks.TolkienTweaks;
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
 
 /**

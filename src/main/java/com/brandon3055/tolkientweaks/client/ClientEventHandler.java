@@ -1,15 +1,14 @@
 package com.brandon3055.tolkientweaks.client;
 
-import com.brandon3055.tolkientweaks.ModItems;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.brandon3055.tolkientweaks.TTFeatures;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Field;
 
@@ -21,17 +20,18 @@ public class ClientEventHandler {
 
 	@SubscribeEvent
 	public void renderPlayerPre(RenderPlayerEvent.Pre event) {
-		if (event.entityPlayer.getHeldItem() != null && event.entityPlayer.getHeldItem().getItem() == ModItems.ring)
+		if ((event.getEntityPlayer().getHeldItemMainhand() != null && event.getEntityPlayer().getHeldItemMainhand().getItem() == TTFeatures.ring) || (event.getEntityPlayer().getHeldItemOffhand() != null && event.getEntityPlayer().getHeldItemOffhand().getItem() == TTFeatures.ring)){
 			event.setCanceled(true);
+		}
 	}
 
 
 	@SubscribeEvent
 	public void guiOpen(GuiOpenEvent event)
 	{
-		if (event.gui instanceof GuiShareToLan)
+		if (event.getGui() instanceof GuiShareToLan)
 		{
-			GuiShareToLan gui = (GuiShareToLan) event.gui;
+			GuiShareToLan gui = (GuiShareToLan) event.getGui();
 
 			try
 			{
@@ -39,7 +39,7 @@ public class ClientEventHandler {
 				parentGui.setAccessible(true);
 
 				Object parent = parentGui.get(gui);
-				event.gui = new GuiLane((GuiIngameMenu)parent);
+				event.setGui(new GuiLane((GuiIngameMenu)parent));
 			}
 			catch (IllegalAccessException e)
 			{
@@ -67,9 +67,9 @@ public class ClientEventHandler {
 		{
 			this.drawDefaultBackground();
 			this.drawCenteredString(this.fontRendererObj, I18n.format("lanServer.title", new Object[0]), this.width / 2, 50, 16777215);
-			this.drawCenteredString(this.fontRendererObj, StatCollector.translateToLocal("info.tt.guiLane1.txt"), this.width / 2, 82, 16777215);
-			this.drawCenteredString(this.fontRendererObj, StatCollector.translateToLocal("info.tt.guiLane2.txt"), this.width / 2, 92, 16777215);
-			this.drawCenteredString(this.fontRendererObj, StatCollector.translateToLocal("info.tt.guiLane3.txt"), this.width / 2, 102, 16777215);
+			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane1.txt"), this.width / 2, 82, 16777215);
+			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane2.txt"), this.width / 2, 92, 16777215);
+			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane3.txt"), this.width / 2, 102, 16777215);
 
 			int k;
 
@@ -80,7 +80,7 @@ public class ClientEventHandler {
 
 			for (k = 0; k < this.labelList.size(); ++k)
 			{
-				((GuiLabel)this.labelList.get(k)).func_146159_a(this.mc, p_73863_1_, p_73863_2_);
+				((GuiLabel)this.labelList.get(k)).drawLabel(this.mc, p_73863_1_, p_73863_2_);
 			}
 		}
 	}

@@ -1,21 +1,20 @@
 package com.brandon3055.tolkientweaks.container;
 
+import com.brandon3055.brandonscore.inventory.ContainerBCBase;
 import com.brandon3055.tolkientweaks.tileentity.TileCamoChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 /**
  * Created by Brandon on 8/03/2015.
  */
-public class ContainerCamoChest extends Container {
+public class ContainerCamoChest extends ContainerBCBase<TileCamoChest> {
 
-	private TileCamoChest tile;
-
-	public ContainerCamoChest(TileCamoChest tile, InventoryPlayer invPlayer)
-	{
+	public ContainerCamoChest(TileCamoChest tile, InventoryPlayer invPlayer) {
+		super(invPlayer.player, tile);
 		this.tile = tile;
 
 		for (int x = 0; x < 9; x++) {
@@ -33,13 +32,13 @@ public class ContainerCamoChest extends Container {
 				addSlotToContainer(new Slot(tile, x + y * 9, 8 + 18 * x, 18 + y * 18));
 			}
 		}
-		invPlayer.player.worldObj.playSoundAtEntity(invPlayer.player, "random.chestopen", 0.5F, invPlayer.player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+		player.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		player.worldObj.playSoundAtEntity(player, "random.chestclosed", 0.5F, player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+		player.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override

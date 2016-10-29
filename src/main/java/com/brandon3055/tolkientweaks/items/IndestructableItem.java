@@ -1,6 +1,6 @@
 package com.brandon3055.tolkientweaks.items;
 
-import com.brandon3055.tolkientweaks.entity.EntityIndestructibleItem;
+import com.brandon3055.tolkientweaks.entity.EntityPersistentItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +18,6 @@ public class IndestructableItem extends Item {
 
 	@Override
 	public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-		return new EntityIndestructibleItem(world, location, itemstack);
+		return new EntityPersistentItem(world, location, itemstack);
 	}
 }

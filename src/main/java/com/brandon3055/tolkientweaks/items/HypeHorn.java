@@ -1,8 +1,12 @@
 package com.brandon3055.tolkientweaks.items;
 
+import com.brandon3055.tolkientweaks.TTSounds;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
 /**
@@ -11,8 +15,8 @@ import net.minecraft.world.World;
 public class HypeHorn extends Item {
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		player.playSound("tolkientweaks:hypeHorn", 5F, 0.95F + world.rand.nextFloat() * 0.1F);
-		return super.onItemRightClick(stack, world, player);
+	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World world, EntityPlayer player, EnumHand hand) {
+		world.playSound(player.posX, player.posY, player.posZ, TTSounds.hypeHorn, SoundCategory.PLAYERS, 5F, 0.95F + world.rand.nextFloat() * 0.1F, true);
+		return super.onItemRightClick(itemStackIn, world, player, hand);
 	}
 }

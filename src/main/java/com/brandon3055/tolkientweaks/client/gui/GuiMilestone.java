@@ -5,7 +5,9 @@ import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
+
+import java.io.IOException;
 
 /**
  * Created by brandon3055 on 14/06/2016.
@@ -36,14 +38,14 @@ public class GuiMilestone extends GuiScreen {
 
         drawCenteredString(fontRendererObj, "Milestone", width / 2, height / 2 - 100, 0xFFFFFF);
         if (error == null){
-            drawCenteredString(fontRendererObj, EnumChatFormatting.DARK_GREEN + "Destination: " + EnumChatFormatting.GOLD + milestone.replace("_", " "), width / 2, height / 2 - 85, 0xFFFFFF);
+            drawCenteredString(fontRendererObj, TextFormatting.DARK_GREEN + "Destination: " + TextFormatting.GOLD + milestone.replace("_", " "), width / 2, height / 2 - 85, 0xFFFFFF);
         }
         else {
             drawCenteredString(fontRendererObj, "Error: " + error, width / 2, height / 2 - 85, 0xFF0000);
         }
 
         if (time > 0){
-            drawCenteredString(fontRendererObj, EnumChatFormatting.DARK_RED + "Cool Down: " + EnumChatFormatting.DARK_PURPLE + "" + time / 20 + " seconds", width / 2, height / 2 - 70, 0xFFFFFF);
+            drawCenteredString(fontRendererObj, TextFormatting.DARK_RED + "Cool Down: " + TextFormatting.DARK_PURPLE + "" + time / 20 + " seconds", width / 2, height / 2 - 70, 0xFFFFFF);
         }
 
         drawGradientRect(width / 2 - 205, height / 2 + 45, width / 2 + 210, height / 2 + 98, 0xFFFFFFFF, 0xFFFFFFFF);
@@ -66,8 +68,9 @@ public class GuiMilestone extends GuiScreen {
         }
     }
 
+
     @Override
-    protected void keyTyped(char p_73869_1_, int p_73869_2_) {
+    protected void keyTyped(char p_73869_1_, int p_73869_2_) throws IOException {
         super.keyTyped(p_73869_1_, p_73869_2_);
 
 

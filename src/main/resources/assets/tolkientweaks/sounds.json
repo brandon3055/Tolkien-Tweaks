@@ -1,18 +1,18 @@
 {
-  "ringdestroy": {
-    "category": "master",
+  "ring_destroy": {
+    "category": "player",
     "sounds": [
       {
-        "name": "ringdestroy",
+        "name": "tolkientweaks:ring_destroy",
         "stream": false
       }
     ]
   },
-  "hypeHorn": {
-    "category": "master",
+  "hype_horn": {
+    "category": "player",
     "sounds": [
       {
-        "name": "hypeHorn",
+        "name": "tolkientweaks:hype_horn",
         "stream": false
       }
     ]
