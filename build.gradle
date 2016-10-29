@@ -12,6 +12,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 repositories {
     maven {
@@ -26,14 +27,6 @@ repositories {
         name 'CB Maven'
         url "http://chickenbones.net/maven/"
     }
-//    maven {
-//        name 'OC Maven'
-//        url "http://maven.cil.li/"
-//    }
-//    maven {
-//        name "JEI Maven."
-//        url "http://dvs1.progwml6.com/files/maven"
-//    }
 }
 
 // Define properties file
@@ -46,8 +39,8 @@ configFile.withReader {
     project.ext.config = new ConfigSlurper().parse prop
 }
 
-//version = "1.0.29"
-group = "com.brandon3055.TolkienTweaks"
+version = "${config.mcversion}-${config.mod_version}"
+group = "com.brandon3055.tolkientweaks"
 archivesBaseName = "TolkienTweaks"
 
 sourceCompatibility = "1.7"
@@ -62,7 +55,7 @@ minecraft {
     makeObfSourceJar = false
 }
 
-String buildNo = "30"
+String buildNo = "38"
 if(System.getenv("BUILD_NUMBER") != null){
     buildNo = System.getenv("BUILD_NUMBER")
 }
@@ -75,23 +68,28 @@ dependencies {
 
 processResources
         {
+            // this will ensure that this task is redone when the versions change.
             inputs.property "version", project.version
             inputs.property "mcversion", project.minecraft.version
 
+            // replace stuff in mcmod.info, nothing else
             from(sourceSets.main.resources.srcDirs) {
                 include 'mcmod.info'
+
+                // replace version and mcversion
                 expand 'version':project.version, 'mcversion':project.minecraft.version
             }
 
+            // copy everything else, thats not the mcmod.info
             from(sourceSets.main.resources.srcDirs) {
                 exclude 'mcmod.info'
             }
             rename '(.+_at.cfg)', 'META-INF/$1'
         }
 
-//def commonManifest = {
-//    attributes 'FMLAT': 'DraconicEvolution_at.cfg'
-//}
+def commonManifest = {
+    attributes 'FMLAT': 'BrandonsCore_at.cfg'
+}
 
 
 jar {
@@ -113,4 +111,50 @@ task deobfJar(type: Jar) {
 // Tell the artifact system about our extra jars
 artifacts {
     archives srcJar, deobfJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.hasProperty("local_maven")) {
+                repository(url: "file://${local_maven}")
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description 'TolkienTweaks'
+                        url 'https://github.com/brandon3055/Tolkien-Tweaks'
+                        scm {
+                            url 'https://github.com/brandon3055/Tolkien-Tweaks'
+                            connection 'scm:git:git@github.com:brandon3055/Draconic-Evolution.git'
+                            developerConnection 'scm:git:git@github.com:brandon3055/Tolkien-Tweaks.git'
+                        }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/brandon3055/Tolkien-Tweaks/issues'
+                        }
+                        licenses {
+                            license {
+                                name 'License'
+                                url 'https://github.com/brandon3055/Tolkien-Tweaks/master/LICENSE.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'brandon3055'
+                                name 'brandon3055'
+                                roles { role 'developer' }
+                            }
+                        }
+                    }
+                }
+            } else {
+                println 'Maven upload triggered but no local_maven property found!'
+            }
+        }
+    }
 }
