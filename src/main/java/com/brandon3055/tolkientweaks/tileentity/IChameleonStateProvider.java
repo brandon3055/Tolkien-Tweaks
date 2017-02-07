@@ -12,4 +12,14 @@ public interface IChameleonStateProvider {
      */
     IBlockState getChameleonBlockState();
 
+    /**
+     * This is only fore use in getQuadOverrides in the block
+     */
+    boolean disableCamo();
+
+    /**
+     * Used for whatever random purpose i need it for.
+     */
+    boolean randomBool();
+
 }

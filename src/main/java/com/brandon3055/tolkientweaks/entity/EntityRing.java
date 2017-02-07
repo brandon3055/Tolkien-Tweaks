@@ -302,7 +302,7 @@ public class EntityRing extends EntityItem {
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
 
-            if (!this.func_189652_ae() && !getOnLava()) {
+            if (!this.hasNoGravity() && !getOnLava()) {
                 this.motionY -= 0.03999999910593033D;
             }
 

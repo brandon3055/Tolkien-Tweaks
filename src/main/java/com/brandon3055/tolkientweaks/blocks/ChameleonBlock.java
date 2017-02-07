@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.blocks;
 
+import codechicken.lib.block.property.unlisted.UnlistedBooleanProperty;
 import codechicken.lib.model.ModelRegistryHelper;
 import com.brandon3055.brandonscore.blocks.BlockBCore;
 import com.brandon3055.brandonscore.config.Feature;
@@ -12,10 +13,12 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -26,6 +29,9 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 /**
  * Created by brandon3055 on 28/10/2016.
  *
@@ -33,6 +39,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvider> extends BlockBCore implements ICustomRender, ITileEntityProvider {
 
     public static final UnlistedStateProperty TARGET_BLOCK_STATE = new UnlistedStateProperty("target_state");//Contains the state of the block who's model this block is trying to emulate
+    public static final UnlistedBooleanProperty DISABLE_CAMO = new UnlistedBooleanProperty("disable_camo");
+    //Because i need a random bool for stuff and things... This isnt exactly a "polished" abstract block.
+    public static final UnlistedBooleanProperty RANDOM_BOOL = new UnlistedBooleanProperty("random_bool");
     public static final PropertyBool FULL_CUBE = PropertyBool.create("full_cube");
 
     /**
@@ -75,7 +84,7 @@ public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvi
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new IProperty[] {FULL_CUBE}, new IUnlistedProperty[] {TARGET_BLOCK_STATE});
+        return new ExtendedBlockState(this, new IProperty[] {FULL_CUBE}, new IUnlistedProperty[] {TARGET_BLOCK_STATE, DISABLE_CAMO, RANDOM_BOOL});
     }
 
     @Override
@@ -83,7 +92,7 @@ public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvi
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof IChameleonStateProvider) {
-            return ((IExtendedBlockState)state).withProperty(TARGET_BLOCK_STATE, ((IChameleonStateProvider) tile).getChameleonBlockState());
+            return ((IExtendedBlockState)state).withProperty(TARGET_BLOCK_STATE, ((IChameleonStateProvider) tile).getChameleonBlockState()).withProperty(DISABLE_CAMO, ((IChameleonStateProvider) tile).disableCamo()).withProperty(RANDOM_BOOL, ((IChameleonStateProvider) tile).randomBool());
         }
 
         return super.getExtendedState(state, world, pos);
@@ -134,4 +143,9 @@ public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvi
     }
 
     //endregion
+
+    @SideOnly(Side.CLIENT)
+    public List<BakedQuad> getQuadOverrides(@Nullable IBlockState state, @Nullable EnumFacing side) {
+        return null;
+    }
 }

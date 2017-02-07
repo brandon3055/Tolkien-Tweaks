@@ -7,7 +7,6 @@ import com.brandon3055.brandonscore.network.wrappers.SyncableVec3D;
 import com.brandon3055.brandonscore.utils.Teleporter;
 import com.brandon3055.tolkientweaks.ConfigHandler;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
-import com.brandon3055.tolkientweaks.utils.LogHelper;
 import com.brandon3055.tolkientweaks.utils.TTWorldData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -86,7 +85,6 @@ public class TileMilestone extends TileBCBase {
         TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
         if (tile instanceof TileMilestone && !world.isRemote){
-            LogHelper.info("Clear "+tile.getPos()+" "+pos);
             ((TileMilestone) tile).users.clear();
             ((TileMilestone) tile).dirtyBlock();
             ((TileMilestone) tile).updateBlock();
@@ -108,8 +106,6 @@ public class TileMilestone extends TileBCBase {
             }
         }
 
-        LogHelper.info("Write Extra " + users+" "+pos);
-
         NBTTagList list = new NBTTagList();
         for (String user : users){
             list.appendTag(new NBTTagString(user));
@@ -128,7 +124,6 @@ public class TileMilestone extends TileBCBase {
             }
         }
 
-        LogHelper.info("Read Extra " + users+" "+pos);
     }
 
     @Override
@@ -153,62 +148,4 @@ public class TileMilestone extends TileBCBase {
         new Teleporter.TeleportLocation(milestonePos.vec.x, milestonePos.vec.y, milestonePos.vec.z, worldObj.provider.getDimension()).teleport(player);
     }
 
-//    @Override
-//    public Packet getDescriptionPacket() {
-//        if (worldObj != null){
-//            users.clear();
-//            Map<String, TTWorldData.MilestoneMarker> markers = TTWorldData.getMap(worldObj);
-//            for (String name : markers.keySet()){
-//                TTWorldData.MilestoneMarker marker = markers.get(name);
-//                if (marker.x == xCoord && marker.y == yCoord && marker.z == zCoord){
-//                    users.add(name);
-//                }
-//            }
-//        }
-//
-//
-//        NBTTagCompound compound = new NBTTagCompound();
-//        NBTTagList list = new NBTTagList();
-//        for (String user : users){
-//            list.appendTag(new NBTTagString(user));
-//        }
-//        compound.setTag("Users", list);
-//        compound.setString("Name", markerName);
-//        compound.setInteger("CoolDown", coolDown);
-//        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, compound);
-//    }
-//
-//    @Override
-//    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-//        users.clear();
-//        NBTTagCompound compound = pkt.func_148857_g();
-//        markerName = compound.getString("Name");
-//        coolDown = compound.getInteger("CoolDown");
-//        if (compound.hasKey("Users")){
-//            NBTTagList list = compound.getTagList("Users", (byte)8);
-//            for (int i = 0; i < list.tagCount(); i++){
-//                users.add(list.getStringTagAt(i));
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void writeToNBT(NBTTagCompound compound) {
-//        super.writeToNBT(compound);
-//        compound.setString("Name", markerName);
-//        compound.setInteger("CoolDown", coolDown);
-//        compound.setDouble("X", x);
-//        compound.setDouble("Y", y);
-//        compound.setDouble("Z", z);
-//    }
-//
-//    @Override
-//    public void readFromNBT(NBTTagCompound compound) {
-//        super.readFromNBT(compound);
-//        markerName = compound.getString("Name");
-//        coolDown = compound.getInteger("CoolDown");
-//        x = compound.getDouble("X");
-//        y = compound.getDouble("Y");
-//        z = compound.getDouble("Z");
-//    }
 }

@@ -21,6 +21,11 @@ import java.util.List;
 public class ModelChameleon implements IBakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+        List<BakedQuad> override = null;
+        if (state != null && state.getBlock() instanceof ChameleonBlock && (override = ((ChameleonBlock) state.getBlock()).getQuadOverrides(state, side)) != null) {
+            return override;
+        }
+
         IBlockState targetState;
 
         if (state instanceof IExtendedBlockState) {
@@ -30,6 +35,7 @@ public class ModelChameleon implements IBakedModel {
             targetState = Blocks.STONE.getDefaultState();
         }
 
+//        MinecraftForgeClient.getRenderLayer()
         return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(targetState).getQuads(targetState, side, rand);
     }
 
@@ -62,14 +68,4 @@ public class ModelChameleon implements IBakedModel {
     public ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
     }
-
-//    @Override This can stay as a reference
-//    public IBakedModel handleExtendedModel(IBakedModel prevModel, IBlockState state) {
-//        IExtendedBlockState extendedState = (IExtendedBlockState) state;
-//        IBlockState targetState = extendedState.getValue(ChameleonBlock.TARGET_BLOCK_STATE);
-//
-//        LogHelper.info("handleExtendedModel: "+targetState);
-//
-//        return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(targetState);
-//    }
 }

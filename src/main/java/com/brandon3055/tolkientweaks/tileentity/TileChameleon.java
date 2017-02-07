@@ -45,6 +45,16 @@ public class TileChameleon extends TileBCBase implements IChameleonStateProvider
         }
     }
 
+    @Override
+    public boolean disableCamo() {
+        return false;
+    }
+
+    @Override
+    public boolean randomBool() {
+        return false;
+    }
+
     public void setChameleonState(IBlockState chameleonState) {
         ResourceLocation name = chameleonState.getBlock().getRegistryName();
         if (name == null) {

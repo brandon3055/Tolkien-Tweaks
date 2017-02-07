@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
+import com.brandon3055.brandonscore.BrandonsCore;
 import com.brandon3055.brandonscore.lib.IActivatableTile;
 import com.brandon3055.brandonscore.lib.IRedstoneEmitter;
 import com.brandon3055.brandonscore.network.PacketTileMessage;
@@ -9,7 +10,6 @@ import com.brandon3055.brandonscore.network.wrappers.SyncableString;
 import com.brandon3055.tolkientweaks.TTFeatures;
 import com.brandon3055.tolkientweaks.client.gui.GuiKeyStone;
 import com.brandon3055.tolkientweaks.items.Key;
-import com.brandon3055.tolkientweaks.utils.LogHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,6 +23,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -42,6 +43,7 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     public final SyncableBool active = new SyncableBool(false, false, false);
     public final SyncableInt timeActive = new SyncableInt(10, false, false);
     public Mode mode = Mode.BUTTON;
+    public boolean disableCamo = false;
 
     public TileKeyStone() {
         super(TTFeatures.camoKeystone);
@@ -61,8 +63,25 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
         if (mode == Mode.BUTTON && active.value && timeActive.value++ > delay.value) {
             timeActive.value = 0;
             active.value = false;
+            updateBlock();
             worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
             worldObj.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F, false);
+        }
+
+        if (worldObj.isRemote) {
+            EntityPlayer player = BrandonsCore.proxy.getClientPlayer();
+
+            if (player == null) {
+                return;
+            }
+
+            ItemStack key = player.getHeldItemMainhand();
+            boolean shouldDisableCamo = (key != null && key.getItem() == TTFeatures.key && (((Key)key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1));
+
+            if (shouldDisableCamo != disableCamo) {
+                disableCamo = shouldDisableCamo;
+                updateBlock();
+            }
         }
     }
 
@@ -82,13 +101,16 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
         switch (mode) {
             case PERMANENT:
                 active.value = true;
+                updateBlock();
                 break;
             case BUTTON:
                 active.value = true;
+                updateBlock();
                 timeActive.value = 0;
                 break;
             case TOGGLE:
                 active.value = !active.value;
+                updateBlock();
                 break;
         }
 
@@ -150,6 +172,7 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
                 break;
             case 3:
                 active.value = false;
+                updateBlock();
                 worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
                 break;
             case 4:
@@ -171,7 +194,6 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     public void writeExtraNBT(NBTTagCompound compound) {
         super.writeExtraNBT(compound);
         compound.setString("ActivationMode", mode.name());
-        LogHelper.info("Save: "+mode.name());
     }
 
     @Override
@@ -182,87 +204,17 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
         }
     }
 
-    //	@Override
-//	public void updateEntity() {
-//		if (isActivated && (getMeta() == 1 || getMeta() == 3)) {
-//			activeTicks++;
-//			if (activeTicks >= delay){
-//				activeTicks = 0;
-//				isActivated = false;
-//				updateBlocks();
-//				worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.5F);
-//			}
-//		}
-//
-//		if (!worldObj.isRemote) return;
-//		EntityPlayer player = TolkienTweaks.proxy.getClientPlayer();
-//		if (player != null && player.getHeldItem() != null && player.getHeldItem().getItem() == ModItems.key){
-//			if (!show) {
-//				show = true;
-//				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-//			}
-//		}
-//		else {
-//			if (show){
-//				show = false;
-//				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-//			}
-//		}
-//	}
-
-//	public boolean onActivated(ItemStack stack, EntityPlayer player){
-//		if (stack == null || stack.getItem() != ModItems.key) {
-//			if(player.capabilities.isCreativeMode && stack == null && player.isSneaking() && (getMeta() == 1 || getMeta() == 3)) delay+=5;
-//			if(player.capabilities.isCreativeMode && stack == null) giveInformation(player);
-//			return false;
-//		}
-//		if (isMasterKey(stack)) return true;
-//		if (setKey(stack)) return true;
-//		if(!isKeyValid(stack, player)) return false;
-//
-//		switch (getMeta()){
-//			case 0: //Permanent Activation
-//				isActivated = true;
-//				player.destroyCurrentEquippedItem();
-//				worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.6F);
-//				break;
-//			case 1: //Button Activation
-//				isActivated = true;
-//				worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.6F);
-//				break;
-//			case 2: //Toggle Activation
-//				if (!isActivated)
-//					worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.6F);
-//				else
-//					worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.5F);
-//				isActivated = !isActivated;
-//				break;
-//			case 3: //Button Activation (Consume Key)
-//				isActivated = true;
-//				player.destroyCurrentEquippedItem();
-//				worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.3F, 0.6F);
-//				break;
-//			case 4:
-//				break;
-//		}
-//
-//		updateBlocks();
-//		return true;
-//	}
-
     private boolean isKeyValid(ItemStack key, EntityPlayer player) {
 		if (key != null && key.getItem() == TTFeatures.key && (((Key)key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1)) {
 			return true;
 		}
         if (worldObj.isRemote) {
             if (key != null && key.getItem() == TTFeatures.key) {
-                player.addChatComponentMessage(new TextComponentString("msg.tolkienaddon.keyWrong.txt"));
+                player.addChatComponentMessage(new TextComponentTranslation("msg.tolkienaddon.keyWrong.txt"));
             }
         }
         return false;
     }
-
-
 
     @Override
     public int getWeakPower(IBlockState blockState, EnumFacing side) {
@@ -272,6 +224,16 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     @Override
     public int getStrongPower(IBlockState blockState, EnumFacing side) {
         return active.value ? 15 : 0;
+    }
+
+    @Override
+    public boolean disableCamo() {
+        return disableCamo;
+    }
+
+    @Override
+    public boolean randomBool() {
+        return active.value;
     }
 
     public enum Mode {

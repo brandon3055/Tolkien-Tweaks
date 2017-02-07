@@ -1,9 +1,11 @@
 package com.brandon3055.tolkientweaks.client;
 
 import codechicken.lib.model.loader.CCBakedModelLoader;
+import codechicken.lib.texture.TextureUtils;
 import com.brandon3055.tolkientweaks.CommonProxy;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.client.rendering.RenderEntityBackpack;
+import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.entity.EntityBackpack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
@@ -28,6 +30,7 @@ public class ClientProxy extends CommonProxy {
 		super.preInit(event);
 		registerRendering();
 		TolkienTweaks.featureParser.registerRendering();
+		TextureUtils.addIconRegister(new TTTextureCache());
 	}
 
 	@Override

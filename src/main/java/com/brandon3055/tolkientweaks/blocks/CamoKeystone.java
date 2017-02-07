@@ -1,9 +1,15 @@
 package com.brandon3055.tolkientweaks.blocks;
 
 
+import codechicken.lib.model.bakery.PlanarFaceBakery;
+import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.tileentity.TileKeyStone;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -12,8 +18,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -77,6 +88,24 @@ public class CamoKeystone extends ChameleonBlock<TileKeyStone> {
     @Nullable
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public List<BakedQuad> getQuadOverrides(@Nullable IBlockState state, @Nullable EnumFacing side) {
+        if (state instanceof IExtendedBlockState && ((IExtendedBlockState)state).getValue(ChameleonBlock.DISABLE_CAMO)) {
+            if (side == null) {
+                return ImmutableList.of();
+            }
+            else if (side == EnumFacing.DOWN || side == EnumFacing.UP) {
+                return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.DISPENSER.getDefaultState()).getQuads(Blocks.DISPENSER.getDefaultState(), side, 0);
+            }
+            else {
+                return Collections.singletonList(PlanarFaceBakery.bakeFace(side, ((IExtendedBlockState)state).getValue(ChameleonBlock.RANDOM_BOOL) ? TTTextureCache.keystoneFaceActive : TTTextureCache.keystoneFace));
+            }
+        }
+
         return null;
     }
 }
