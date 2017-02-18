@@ -11,7 +11,10 @@
       "soul": {"textures": {"layer0": "tolkientweaks:items/soul"}},
       "east_token": {"textures": {"layer0": "tolkientweaks:items/eastern_alliance_token"}},
       "west_token": {"textures": {"layer0": "tolkientweaks:items/western_alliance_token"}},
-      "hype_horn": {"textures": {"layer0": "tolkientweaks:items/hype_horn"}}
+      "hype_horn": {"textures": {"layer0": "tolkientweaks:items/hype_horn"}},
+      "brons_coin": {"textures": {"layer0": "tolkientweaks:items/brons_coin"}},
+      "silver_coin": {"textures": {"layer0": "tolkientweaks:items/silver_coin"}},
+      "gold_coin": {"textures": {"layer0": "tolkientweaks:items/gold_coin"}}
     }
   }
 }

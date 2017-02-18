@@ -10,6 +10,7 @@ import com.brandon3055.tolkientweaks.tileentity.TileCamoChest;
 import com.brandon3055.tolkientweaks.tileentity.TileKeyStone;
 import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
 import com.brandon3055.tolkientweaks.tileentity.TileSmoker;
+import net.minecraft.item.Item;
 
 /**
  * Created by Brandon on 13/01/2015.
@@ -41,6 +42,15 @@ public class TTFeatures {
 
 	@Feature(registryName = "palantir")
 	public static Palantir palantir = new Palantir();										//.setUnlocalizedName(TolkienTweaks.MODID.toLowerCase()+":hypeHorn").setCreativeTab(CreativeTabs.tabMisc).setTextureName(TolkienTweaks.MODID.toLowerCase()+":hypeHorn");
+
+	@Feature(registryName = "brons_coin", stateOverride = "tt_items#type=brons_coin")
+	public static Item brons_coin = new Item();
+
+	@Feature(registryName = "silver_coin", stateOverride = "tt_items#type=silver_coin")
+	public static Item silver_coin = new Item();
+
+	@Feature(registryName = "gold_coin", stateOverride = "tt_items#type=gold_coin")
+	public static Item gold_coin = new Item();
 
 	//endregion
 
