@@ -3,6 +3,7 @@ package com.brandon3055.tolkientweaks.client.gui;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.container.ContainerCamoChest;
 import com.brandon3055.tolkientweaks.tileentity.TileCamoChest;
+import com.brandon3055.tolkientweaks.tileentity.TileLockableChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +18,7 @@ public class GuiHandler implements IGuiHandler {
 
     public static final int ID_CAMO_CHEST = 0;
     public static final int ID_KEYSTONE = 1;
+    public static final int ID_LOCKABLE_CHEST = 2;
 
     public GuiHandler() {
         NetworkRegistry.INSTANCE.registerGuiHandler(TolkienTweaks.instance, this);
@@ -33,6 +35,11 @@ public class GuiHandler implements IGuiHandler {
                     return new ContainerCamoChest((TileCamoChest) tile, player.inventory);
                 }
             }
+            case ID_LOCKABLE_CHEST: {
+                if (tile instanceof TileLockableChest) {
+                    return ((TileLockableChest) tile).createContainer(player.inventory, player);
+                }
+            }
         }
         return null;
     }
@@ -46,6 +53,11 @@ public class GuiHandler implements IGuiHandler {
             case ID_CAMO_CHEST: {
                 if (tile instanceof TileCamoChest) {
                     return new GuiCamoChest((TileCamoChest) tile, player.inventory);
+                }
+            }
+            case ID_LOCKABLE_CHEST: {
+                if (tile instanceof TileLockableChest) {
+                    return new GuiLockableChest(((TileLockableChest) tile).getInventory(), player.inventory);
                 }
             }
         }

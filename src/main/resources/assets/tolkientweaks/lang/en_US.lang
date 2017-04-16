@@ -27,6 +27,7 @@ entity.TolkienTweaks.Backpack.name=Backpack
 
 msg.tolkienaddon.keySet.txt=Key bound to builder block
 msg.tolkienaddon.keyWrong.txt=§4Wrong Key!!!
+msg.tolkienaddon.keyWrongOwner.txt=§4This key does not belong to you!
 
 container.tt.camoChest=Camouflaged Chest
 

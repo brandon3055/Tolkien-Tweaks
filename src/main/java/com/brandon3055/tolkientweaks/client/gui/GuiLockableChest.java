@@ -1,0 +1,47 @@
+package com.brandon3055.tolkientweaks.client.gui;
+
+import com.brandon3055.tolkientweaks.container.ContainerLockableChest;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
+
+/**
+ * Created by brandon3055 on 16/04/2017.
+ */
+public class GuiLockableChest extends GuiContainer
+{
+    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    private final IInventory upperChestInventory;
+    private final IInventory lowerChestInventory;
+    private final int inventoryRows;
+
+    public GuiLockableChest(IInventory chestInv, IInventory playerInv)
+    {
+        super(new ContainerLockableChest(playerInv, chestInv, Minecraft.getMinecraft().thePlayer));
+        this.upperChestInventory = chestInv;
+        this.lowerChestInventory = playerInv;
+        this.allowUserInput = false;
+        int i = 222;
+        int j = 114;
+        this.inventoryRows = chestInv.getSizeInventory() / 9;
+        this.ySize = 114 + this.inventoryRows * 18;
+    }
+
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    {
+        this.fontRendererObj.drawString(this.lowerChestInventory.getDisplayName().getUnformattedText(), 8, 6, 4210752);
+        this.fontRendererObj.drawString(this.upperChestInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+    }
+
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
+    {
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
+        int i = (this.width - this.xSize) / 2;
+        int j = (this.height - this.ySize) / 2;
+        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
+        this.drawTexturedModalRect(i, j + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+    }
+}

@@ -1,15 +1,9 @@
 package com.brandon3055.tolkientweaks;
 
 import com.brandon3055.brandonscore.config.Feature;
-import com.brandon3055.tolkientweaks.blocks.CamoChest;
-import com.brandon3055.tolkientweaks.blocks.CamoKeystone;
-import com.brandon3055.tolkientweaks.blocks.MileStone;
-import com.brandon3055.tolkientweaks.blocks.Smoker;
+import com.brandon3055.tolkientweaks.blocks.*;
 import com.brandon3055.tolkientweaks.items.*;
-import com.brandon3055.tolkientweaks.tileentity.TileCamoChest;
-import com.brandon3055.tolkientweaks.tileentity.TileKeyStone;
-import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
-import com.brandon3055.tolkientweaks.tileentity.TileSmoker;
+import com.brandon3055.tolkientweaks.tileentity.*;
 import net.minecraft.item.Item;
 
 /**
@@ -67,6 +61,9 @@ public class TTFeatures {
 
 	@Feature(registryName = "milestone", tileEntity = TileMilestone.class)
 	public static MileStone milestone = new MileStone();
+
+	@Feature(registryName = "lockable_chest", tileEntity = TileLockableChest.class)
+	public static LockableChest lockableChest = new LockableChest();
 
 	//endregion
 }

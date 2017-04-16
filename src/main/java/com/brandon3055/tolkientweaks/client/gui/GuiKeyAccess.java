@@ -11,15 +11,14 @@ import com.brandon3055.tolkientweaks.TTFeatures;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.items.Key;
 import com.brandon3055.tolkientweaks.network.PacketSetKey;
-import com.brandon3055.tolkientweaks.tileentity.TileKeyStone;
-import com.brandon3055.tolkientweaks.utils.LogHelper;
+import com.brandon3055.tolkientweaks.tileentity.IKeyAccessTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 /**
  * Created by brandon3055 on 29/10/2016.
  */
-public class GuiKeyStone extends ModularGuiScreen implements IMGuiListener {
+public class GuiKeyAccess extends ModularGuiScreen implements IMGuiListener {
 
     private MGuiButtonToggle consumeKey;
     private MGuiButton toggleMode;
@@ -31,13 +30,13 @@ public class GuiKeyStone extends ModularGuiScreen implements IMGuiListener {
 
     private boolean keymode;
     private EntityPlayer player;
-    private TileKeyStone tile;
+    private IKeyAccessTile lockable;
 
-    public GuiKeyStone(EntityPlayer player, TileKeyStone tile) {
+    public GuiKeyAccess(EntityPlayer player, IKeyAccessTile lockable) {
         this.player = player;
-        this.tile = tile;
+        this.lockable = lockable;
         xSize = 200;
-        keymode = tile == null;
+        keymode = lockable == null;
         ySize = keymode ? 70 : 128;
     }
 
@@ -67,34 +66,38 @@ public class GuiKeyStone extends ModularGuiScreen implements IMGuiListener {
         else {
             RawColumns builder = new RawColumns(guiLeft() + 5, guiTop() + 5, 1, 14, 1);
 
-            builder.add(consumeKey = new MGuiButtonToggle(this, 0, 0, xSize - 10, 14, "Toggle Consume Key") {
-                @Override
-                public boolean isPressed() {
-                    return tile.consumeKey.value;
-                }
-            });
-            builder.add(toggleMode = new MGuiButton(this, 0, 0, xSize - 10, 14, "Toggle Mode") {
-                @Override
-                public String getDisplayString() {
-                    return "Mode: " + tile.mode;
-                }
-            });
-//            builder.add(permanent = new MGuiButtonToggle(this, 0, 0, xSize - 10, 14, "Toggle Permanent") {
-//                @Override
-//                public boolean isPressed() {
-//                    return tile.permanent.value;
-//                }
-//            });
-            builder.add(reset = new MGuiButton(this, 0, 0, xSize - 10, 14, "Reset state (For permanent mode)"));
+            if (lockable.hasCK()) {
+                builder.add(consumeKey = new MGuiButtonToggle(this, 0, 0, xSize - 10, 14, "Toggle Consume Key") {
+                    @Override
+                    public boolean isPressed() {
+                        return lockable.consumeKey();
+                    }
+                });
+            }
+            if (lockable.hasMode()) {
+                builder.add(toggleMode = new MGuiButton(this, 0, 0, xSize - 10, 14, "Toggle Mode") {
+                    @Override
+                    public String getDisplayString() {
+                        return "Mode: " + lockable.mode();
+                    }
+                });
+
+                builder.add(reset = new MGuiButton(this, 0, 0, xSize - 10, 14, "Reset state (For permanent mode)"));
+            }
+
             builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Key Code Field").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
             builder.add(keyCodeField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRendererObj));
             keyCodeField.setMaxStringLength(1024).setListener(this);
-            keyCodeField.setText(tile.keyCode.value);
-            builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Delay Field").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
-            builder.add(dellayField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRendererObj));
-            dellayField.addChild(new MGuiHoverPopup(this, new String[] {"For button mode, Set how long in ticks the button stays pressed"}, dellayField));
-            dellayField.setText(tile.delay.value + "");
-            dellayField.setMaxStringLength(10).setListener(this);
+            keyCodeField.setText(lockable.getCode());
+
+            if (lockable.hasDelay()) {
+                builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Delay Field").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
+                builder.add(dellayField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRendererObj));
+                dellayField.addChild(new MGuiHoverPopup(this, new String[]{"For button mode, Set how long in ticks the button stays pressed"}, dellayField));
+                dellayField.setText(lockable.getDelay() + "");
+                dellayField.setMaxStringLength(10).setListener(this);
+            }
+
             builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Changes are saved automatically").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
 
             builder.finish(manager, 0);
@@ -105,28 +108,27 @@ public class GuiKeyStone extends ModularGuiScreen implements IMGuiListener {
 
     @Override
     public void onMGuiEvent(String eventString, MGuiElementBase eventElement) {
-        LogHelper.info(eventString+" "+eventElement);
         if (keymode && (eventElement == reset || eventElement == consumeKey)) {
             TolkienTweaks.network.sendToServer(new PacketSetKey(keyCodeField.getText(), consumeKey.isPressed()));
         }
         else if (!keymode) {
             if (eventElement == consumeKey) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 0, false, false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 0, false, false));
             }
             else if (eventElement == toggleMode) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 1, false, false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 1, false, false));
             }
             else if (eventElement == permanent) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 2, false, false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 2, false, false));
             }
             else if (eventElement == reset) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 3, false, false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 3, false, false));
             }
             else if (eventElement == keyCodeField) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 4, keyCodeField.getText(), false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 4, keyCodeField.getText(), false));
             }
             else if (eventElement == dellayField) {
-                tile.sendPacketToServer(new PacketTileMessage(tile, (byte) 5, dellayField.getText(), false));
+                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 5, dellayField.getText(), false));
             }
         }
     }

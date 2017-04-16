@@ -1,6 +1,7 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
 import com.brandon3055.brandonscore.BrandonsCore;
+import com.brandon3055.brandonscore.blocks.TileBCBase;
 import com.brandon3055.brandonscore.lib.IActivatableTile;
 import com.brandon3055.brandonscore.lib.IRedstoneEmitter;
 import com.brandon3055.brandonscore.network.PacketTileMessage;
@@ -8,7 +9,7 @@ import com.brandon3055.brandonscore.network.wrappers.SyncableBool;
 import com.brandon3055.brandonscore.network.wrappers.SyncableInt;
 import com.brandon3055.brandonscore.network.wrappers.SyncableString;
 import com.brandon3055.tolkientweaks.TTFeatures;
-import com.brandon3055.tolkientweaks.client.gui.GuiKeyStone;
+import com.brandon3055.tolkientweaks.client.gui.GuiKeyAccess;
 import com.brandon3055.tolkientweaks.items.Key;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -33,7 +34,7 @@ import javax.annotation.Nullable;
 /**
  * Created by Brandon on 8/02/2015.
  */
-public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITickable, IActivatableTile {
+public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITickable, IActivatableTile, IKeyAccessTile {
 
     public final SyncableString keyCode = new SyncableString("", true, false);
     public final SyncableInt delay = new SyncableInt(10, true, false);
@@ -142,7 +143,7 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
 
     @SideOnly(Side.CLIENT)
     public void openGUI() {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyStone(Minecraft.getMinecraft().thePlayer, this));
+        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyAccess(Minecraft.getMinecraft().thePlayer, this));
     }
 
     @Override
@@ -235,6 +236,50 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     public boolean randomBool() {
         return active.value;
     }
+
+    //region KeyAccess
+
+    @Override
+    public TileBCBase getTile() {
+        return this;
+    }
+
+    @Override
+    public boolean hasCK() {
+        return true;
+    }
+
+    @Override
+    public boolean consumeKey() {
+        return consumeKey.value;
+    }
+
+    @Override
+    public boolean hasMode() {
+        return true;
+    }
+
+    @Override
+    public Mode mode() {
+        return mode;
+    }
+
+    @Override
+    public String getCode() {
+        return keyCode.value;
+    }
+
+    @Override
+    public boolean hasDelay() {
+        return true;
+    }
+
+    @Override
+    public int getDelay() {
+        return delay.value;
+    }
+
+    //endregion
 
     public enum Mode {
         PERMANENT, BUTTON, TOGGLE;

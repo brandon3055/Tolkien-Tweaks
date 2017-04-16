@@ -1,7 +1,7 @@
 package com.brandon3055.tolkientweaks.items;
 
 import codechicken.lib.util.ItemNBTUtils;
-import com.brandon3055.tolkientweaks.client.gui.GuiKeyStone;
+import com.brandon3055.tolkientweaks.client.gui.GuiKeyAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +35,7 @@ public class Key extends Item {
 
     @SideOnly(Side.CLIENT)
     private void openGUI(EntityPlayer player) {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyStone(player, null));
+        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyAccess(player, null));
     }
 
     @Override
