@@ -57,7 +57,7 @@ public class GuiHandler implements IGuiHandler {
             }
             case ID_LOCKABLE_CHEST: {
                 if (tile instanceof TileLockableChest) {
-                    return new GuiLockableChest(((TileLockableChest) tile).getInventory(), player.inventory);
+                    return new GuiLockableChest(((TileLockableChest) tile).getInventory(player.getHeldItemMainhand()), player.inventory);
                 }
             }
         }

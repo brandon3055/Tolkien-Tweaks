@@ -2,7 +2,6 @@ package com.brandon3055.tolkientweaks.tileentity;
 
 import codechicken.lib.util.ItemNBTUtils;
 import com.brandon3055.brandonscore.blocks.TileBCBase;
-import com.brandon3055.brandonscore.blocks.TileInventoryBase;
 import com.brandon3055.brandonscore.network.PacketTileMessage;
 import com.brandon3055.brandonscore.network.wrappers.SyncableInt;
 import com.brandon3055.brandonscore.network.wrappers.SyncableString;
@@ -20,8 +19,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -38,7 +35,7 @@ import javax.annotation.Nullable;
 /**
  * Created by brandon3055 on 16/04/2017.
  */
-public class TileLockableChest extends TileInventoryBase implements ISidedInventory, ITickable, IKeyAccessTile {
+public class TileLockableChest extends TileBCBase implements ITickable, IKeyAccessTile {
 
     public final SyncableString keyCode = new SyncableString("", true, false);
 
@@ -55,20 +52,19 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
 //    private String customName;
 
     public TileLockableChest() {
-        setInventorySize(27);
         registerSyncableObject(numPlayersUsing, false);
         registerSyncableObject(keyCode, true);
     }
 
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
-    }
+//    @Override
+//    public int getInventoryStackLimit() {
+//        return 64;
+//    }
+//
+//    @Override
+//    public boolean isUseableByPlayer(EntityPlayer player) {
+//        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
+//    }
 
     @Override
     public void updateContainingBlockInfo() {
@@ -165,9 +161,9 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
 
             for (EntityPlayer entityplayer : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double) ((float) i - 5.0F), (double) ((float) j - 5.0F), (double) ((float) k - 5.0F), (double) ((float) (i + 1) + 5.0F), (double) ((float) (j + 1) + 5.0F), (double) ((float) (k + 1) + 5.0F)))) {
                 if (entityplayer.openContainer instanceof ContainerLockableChest) {
-                    IInventory iinventory = ((ContainerLockableChest) entityplayer.openContainer).getLowerChestInventory();
+                    InventoryLockableChest iinventory = ((ContainerLockableChest) entityplayer.openContainer).lockableInventory;
 
-                    if (iinventory == this || iinventory instanceof InventoryLockableChest && ((InventoryLockableChest) iinventory).isPartOfLargeChest(this)) {
+                    if (iinventory.tile == this || iinventory.tile.getAdjacentChest() == this) {
                         ++this.numPlayersUsing.value;
                     }
                 }
@@ -229,8 +225,8 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
         }
     }
 
-    @Override
-    public void openInventory(EntityPlayer player) {
+//    @Override
+    public void openChest(EntityPlayer player) {
         if (!player.isSpectator()) {
             if (this.numPlayersUsing.value < 0) {
                 this.numPlayersUsing.value = 0;
@@ -243,8 +239,8 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
         }
     }
 
-    @Override
-    public void closeInventory(EntityPlayer player) {
+//    @Override
+    public void closeChest(EntityPlayer player) {
         if (!player.isSpectator() && this.getBlockType() instanceof LockableChest) {
             --this.numPlayersUsing.value;
 //            this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing.value);
@@ -252,11 +248,11 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
             this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType());
         }
     }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return true;
-    }
+//
+//    @Override
+//    public boolean isItemValidForSlot(int index, ItemStack stack) {
+//        return true;
+//    }
 
     @Override
     public void invalidate() {
@@ -265,7 +261,7 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
         this.checkForAdjacentChests();
     }
 
-    @Override
+//    @Override
     public String getName() {
         return "container.chest";
     }
@@ -274,76 +270,77 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
 //    public String getGuiID() {
 //        return "minecraft:chest";
 //    }
-//
+
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-        return new ContainerLockableChest(playerInventory, getInventory(), playerIn);
+        return new ContainerLockableChest(playerInventory, getInventory(playerIn.getHeldItemMainhand()), playerIn);
     }
 
     @Nullable
-    public IInventory getInventory()
+    public InventoryLockableChest getInventory(ItemStack key)
     {
-        TileEntity tileentity = worldObj.getTileEntity(pos);
-
-        if (!(tileentity instanceof TileLockableChest))
-        {
-            return null;
-        }
-        else
-        {
-            IInventory ilockablecontainer = (TileLockableChest)tileentity;
-
-            if (TTFeatures.lockableChest.isBlocked(worldObj, pos))
-            {
-                return null;
-            }
-            else
-            {
-                for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-                {
-                    BlockPos blockpos = pos.offset(enumfacing);
-                    Block block = worldObj.getBlockState(blockpos).getBlock();
-
-                    if (block == this.getBlockType())
-                    {
-                        if (TTFeatures.lockableChest.isBlocked(worldObj, blockpos))
-                        {
-                            return null;
-                        }
-
-                        TileEntity tileentity1 = worldObj.getTileEntity(blockpos);
-
-                        if (tileentity1 instanceof TileLockableChest)
-                        {
-                            if (enumfacing != EnumFacing.WEST && enumfacing != EnumFacing.NORTH)
-                            {
-                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", ilockablecontainer, (TileLockableChest)tileentity1);
-                            }
-                            else
-                            {
-                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", (TileLockableChest)tileentity1, ilockablecontainer);
-                            }
-                        }
-                    }
-                }
-
-                return ilockablecontainer;
-            }
-        }
+        return new InventoryLockableChest(this, key);
+//        TileEntity tileentity = worldObj.getTileEntity(pos);
+//
+//        if (!(tileentity instanceof TileLockableChest))
+//        {
+//            return null;
+//        }
+//        else
+//        {
+//            IInventory ilockablecontainer = (TileLockableChest)tileentity;
+//
+//            if (TTFeatures.lockableChest.isBlocked(worldObj, pos))
+//            {
+//                return null;
+//            }
+//            else
+//            {
+//                for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+//                {
+//                    BlockPos blockpos = pos.offset(enumfacing);
+//                    Block block = worldObj.getBlockState(blockpos).getBlock();
+//
+//                    if (block == this.getBlockType())
+//                    {
+//                        if (TTFeatures.lockableChest.isBlocked(worldObj, blockpos))
+//                        {
+//                            return null;
+//                        }
+//
+//                        TileEntity tileentity1 = worldObj.getTileEntity(blockpos);
+//
+//                        if (tileentity1 instanceof TileLockableChest)
+//                        {
+//                            if (enumfacing != EnumFacing.WEST && enumfacing != EnumFacing.NORTH)
+//                            {
+//                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", ilockablecontainer, (TileLockableChest)tileentity1);
+//                            }
+//                            else
+//                            {
+//                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", (TileLockableChest)tileentity1, ilockablecontainer);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                return ilockablecontainer;
+//            }
+//        }
     }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
+//
+//    @Override
+//    public int getField(int id) {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void setField(int id, int value) {
+//    }
+//
+//    @Override
+//    public int getFieldCount() {
+//        return 0;
+//    }
 
 //    public net.minecraftforge.items.VanillaDoubleChestItemHandler doubleChestHandler;
 //
@@ -369,20 +366,20 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
 //    }
 
 
-    @Override
-    public int[] getSlotsForFace(EnumFacing side) {
-        return new int[0];
-    }
-
-    @Override
-    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-        return false;
-    }
-
-    @Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-        return false;
-    }
+//    @Override
+//    public int[] getSlotsForFace(EnumFacing side) {
+//        return new int[0];
+//    }
+//
+//    @Override
+//    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+//        return false;
+//    }
 
     @Override
     public boolean canRenderBreaking() {
@@ -391,7 +388,7 @@ public class TileLockableChest extends TileInventoryBase implements ISidedInvent
 
     //region lock
 
-    private TileLockableChest getAdjacentChest() {
+    public TileLockableChest getAdjacentChest() {
         checkForAdjacentChests();
         if (adjacentChestXNeg != null) {
             return adjacentChestXNeg;

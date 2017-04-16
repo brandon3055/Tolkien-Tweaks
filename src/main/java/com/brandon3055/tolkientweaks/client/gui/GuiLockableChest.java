@@ -1,6 +1,7 @@
 package com.brandon3055.tolkientweaks.client.gui;
 
 import com.brandon3055.tolkientweaks.container.ContainerLockableChest;
+import com.brandon3055.tolkientweaks.container.InventoryLockableChest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,11 +14,11 @@ import net.minecraft.util.ResourceLocation;
 public class GuiLockableChest extends GuiContainer
 {
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private final IInventory upperChestInventory;
+    private final InventoryLockableChest upperChestInventory;
     private final IInventory lowerChestInventory;
     private final int inventoryRows;
 
-    public GuiLockableChest(IInventory chestInv, IInventory playerInv)
+    public GuiLockableChest(InventoryLockableChest chestInv, IInventory playerInv)
     {
         super(new ContainerLockableChest(playerInv, chestInv, Minecraft.getMinecraft().thePlayer));
         this.upperChestInventory = chestInv;

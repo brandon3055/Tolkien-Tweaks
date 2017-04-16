@@ -1,140 +1,159 @@
 package com.brandon3055.tolkientweaks.container;
 
+import com.brandon3055.brandonscore.utils.ItemNBTHelper;
+import com.brandon3055.tolkientweaks.tileentity.TileLockableChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-
-import javax.annotation.Nullable;
 
 /**
  * Created by brandon3055 on 16/04/2017.
  */
 public class InventoryLockableChest implements IInventory/*, IInteractionObject*/ {
-    private final String name;
-    private final IInventory upperChest;
-    private final IInventory lowerChest;
+    public TileLockableChest tile;
+    private ItemStack key;
+    private ItemStack[] items = new ItemStack[getSizeInventory()];
+//    private final IInventory upperChest;
+//    private final IInventory lowerChest;
 
-    public InventoryLockableChest(String nameIn, IInventory upperChestIn, IInventory lowerChestIn)
+    public InventoryLockableChest(TileLockableChest tile, ItemStack key)
     {
-        this.name = nameIn;
-
-        if (upperChestIn == null)
-        {
-            upperChestIn = lowerChestIn;
-        }
-
-        if (lowerChestIn == null)
-        {
-            lowerChestIn = upperChestIn;
-        }
-
-        this.upperChest = upperChestIn;
-        this.lowerChest = lowerChestIn;
+        this.tile = tile;
+        this.key = key;
+//
+//        if (upperChestIn == null)
+//        {
+//            upperChestIn = lowerChestIn;
+//        }
+//
+//        if (lowerChestIn == null)
+//        {
+//            lowerChestIn = upperChestIn;
+//        }
+//
+//        this.upperChest = upperChestIn;
+//        this.lowerChest = lowerChestIn;
+        loadItems();
     }
 
     @Override
     public int getSizeInventory()
     {
-        return this.upperChest.getSizeInventory() + this.lowerChest.getSizeInventory();
+        return 54;
     }
-
-    public boolean isPartOfLargeChest(IInventory inventoryIn)
-    {
-        return this.upperChest == inventoryIn || this.lowerChest == inventoryIn;
-    }
+//
+//    public boolean isPartOfLargeChest(IInventory inventoryIn)
+//    {
+//        return this.upperChest == inventoryIn || this.lowerChest == inventoryIn;
+//    }
 
     @Override
     public String getName()
     {
-        return this.upperChest.hasCustomName() ? this.upperChest.getName() : (this.lowerChest.hasCustomName() ? this.lowerChest.getName() : this.name);
+        return tile.getName();
     }
 
     @Override
     public boolean hasCustomName()
     {
-        return this.upperChest.hasCustomName() || this.lowerChest.hasCustomName();
+        return false;
     }
 
     @Override
     public ITextComponent getDisplayName()
     {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+        return new TextComponentTranslation(this.getName());
     }
 
     @Override
-    @Nullable
-    public ItemStack getStackInSlot(int index)
-    {
-        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.getStackInSlot(index - this.upperChest.getSizeInventory()) : this.upperChest.getStackInSlot(index);
+    public ItemStack getStackInSlot(int index) {
+        return index < items.length && index >= 0 ? items[index] : null;
     }
 
     @Override
-    @Nullable
-    public ItemStack decrStackSize(int index, int count)
-    {
-        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.decrStackSize(index - this.upperChest.getSizeInventory(), count) : this.upperChest.decrStackSize(index, count);
-    }
+    public ItemStack decrStackSize(int index, int count) {
+        ItemStack itemstack = getStackInSlot(index);
 
-    @Override
-    @Nullable
-    public ItemStack removeStackFromSlot(int index)
-    {
-        return index >= this.upperChest.getSizeInventory() ? this.lowerChest.removeStackFromSlot(index - this.upperChest.getSizeInventory()) : this.upperChest.removeStackFromSlot(index);
-    }
-
-    @Override
-    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
-    {
-        if (index >= this.upperChest.getSizeInventory())
-        {
-            this.lowerChest.setInventorySlotContents(index - this.upperChest.getSizeInventory(), stack);
+        if (itemstack != null) {
+            if (itemstack.stackSize <= count) {
+                setInventorySlotContents(index, null);
+            } else {
+                itemstack = itemstack.splitStack(count);
+                if (itemstack.stackSize == 0) {
+                    setInventorySlotContents(index, null);
+                }
+            }
         }
-        else
-        {
-            this.upperChest.setInventorySlotContents(index, stack);
+        return itemstack;
+    }
+
+    @Override
+    public ItemStack removeStackFromSlot(int index) {
+        ItemStack item = getStackInSlot(index);
+
+        if (item != null) {
+            setInventorySlotContents(index, null);
+        }
+
+        return item;
+    }
+
+    @Override
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (index < 0 || index >= items.length){
+            return;
+        }
+
+        items[index] = stack;
+
+        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+            stack.stackSize = getInventoryStackLimit();
+        }
+        markDirty();
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 54;
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer player) {
+        return true;
+    }
+
+    @Override
+    public void openInventory(EntityPlayer player) {
+        loadItems();
+        tile.openChest(player);
+        TileLockableChest adj = tile.getAdjacentChest();
+        if (adj != null) {
+            adj.openChest(player);
         }
     }
 
     @Override
-    public int getInventoryStackLimit()
-    {
-        return this.upperChest.getInventoryStackLimit();
+    public void closeInventory(EntityPlayer player) {
+        saveItems();
+        tile.closeChest(player);
+        TileLockableChest adj = tile.getAdjacentChest();
+        if (adj != null) {
+            adj.closeChest(player);
+        }
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        return true;
     }
 
     @Override
     public void markDirty()
     {
-        this.upperChest.markDirty();
-        this.lowerChest.markDirty();
-    }
-
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer player)
-    {
-        return this.upperChest.isUseableByPlayer(player) && this.lowerChest.isUseableByPlayer(player);
-    }
-
-    @Override
-    public void openInventory(EntityPlayer player)
-    {
-        this.upperChest.openInventory(player);
-        this.lowerChest.openInventory(player);
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player)
-    {
-        this.upperChest.closeInventory(player);
-        this.lowerChest.closeInventory(player);
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack)
-    {
-        return true;
+        saveItems();
     }
 
     @Override
@@ -165,11 +184,42 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
         return "minecraft:chest";
     }*/
 
+    protected void loadItems() {
+        if (key == null) {
+            return;
+        }
+
+        NBTTagCompound compound = ItemNBTHelper.getCompound(key);
+        NBTTagCompound[] tag = new NBTTagCompound[items.length];
+
+        for (int i = 0; i < items.length; i++) {
+            tag[i] = compound.getCompoundTag("Item" + i);
+            items[i] = ItemStack.loadItemStackFromNBT(tag[i]);
+        }
+    }
+
+    protected void saveItems() {
+        if (key == null) {
+            return;
+        }
+
+        NBTTagCompound compound = ItemNBTHelper.getCompound(key);
+        NBTTagCompound[] tag = new NBTTagCompound[items.length];
+
+        for (int i = 0; i < items.length; i++) {
+            tag[i] = new NBTTagCompound();
+
+            if (items[i] != null) {
+                tag[i] = items[i].writeToNBT(tag[i]);
+            }
+
+            compound.setTag("Item" + i, tag[i]);
+        }
+    }
 
     @Override
     public void clear()
     {
-        this.upperChest.clear();
-        this.lowerChest.clear();
+
     }
 }

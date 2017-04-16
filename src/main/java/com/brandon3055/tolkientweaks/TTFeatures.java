@@ -13,7 +13,7 @@ public class TTFeatures {
 
 	//region Items
 
-	@Feature(registryName = "key", stateOverride = "tt_items#type=key", variantMap = {"0:type=key", "1:type=key"})
+	@Feature(registryName = "key", stateOverride = "tt_items#type=key", variantMap = {"0:type=key", "1:type=key", "2:type=key2"})
 	public static Key key = new Key();
 
 	@Feature(registryName = "palantir_shard", stateOverride = "tt_items#type=palantir_shard")												//.setUnlocalizedName(TolkienTweaks.MODID.toLowerCase()+":palantir").setCreativeTab(CreativeTabs.tabMisc).setTextureName(TolkienTweaks.MODID.toLowerCase()+":palantir").setMaxStackSize(1);

@@ -42,6 +42,7 @@ public class Key extends Item {
     public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> subItems) {
         subItems.add(new ItemStack(item));
         subItems.add(new ItemStack(item, 1, 1));
+        subItems.add(new ItemStack(item, 1, 2));
     }
 
     @Override

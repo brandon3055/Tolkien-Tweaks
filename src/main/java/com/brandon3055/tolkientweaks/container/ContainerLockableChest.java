@@ -15,12 +15,12 @@ import javax.annotation.Nullable;
  */
 public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
 
-    private final IInventory lowerChestInventory;
+    public final InventoryLockableChest lockableInventory;
     private final int numRows;
 
-    public ContainerLockableChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player)
+    public ContainerLockableChest(IInventory playerInventory, InventoryLockableChest chestInventory, EntityPlayer player)
     {
-        this.lowerChestInventory = chestInventory;
+        this.lockableInventory = chestInventory;
         this.numRows = chestInventory.getSizeInventory() / 9;
         chestInventory.openInventory(player);
         int i = (this.numRows - 4) * 18;
@@ -49,7 +49,7 @@ public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.lowerChestInventory.isUseableByPlayer(playerIn);
+        return this.lockableInventory.isUseableByPlayer(playerIn);
     }
 
     @Nullable
@@ -91,12 +91,7 @@ public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
     public void onContainerClosed(EntityPlayer playerIn)
     {
         super.onContainerClosed(playerIn);
-        this.lowerChestInventory.closeInventory(playerIn);
-    }
-
-    public IInventory getLowerChestInventory()
-    {
-        return this.lowerChestInventory;
+        this.lockableInventory.closeInventory(playerIn);
     }
 
     public class SlotPlayerInv extends Slot {

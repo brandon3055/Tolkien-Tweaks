@@ -21,7 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
@@ -419,7 +418,7 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
         else
         {
             TileEntity tile = worldIn.getTileEntity(pos);
-            if (playerIn.isCreative() || (tile instanceof TileLockableChest && !((TileLockableChest) tile).isKeyValid(heldItem, playerIn))) {
+            if (playerIn.isCreative() || (tile instanceof TileLockableChest && !((TileLockableChest) tile).isKeyValid(playerIn.getHeldItemMainhand(), playerIn))) {
                 return true;
             }
 
@@ -550,10 +549,6 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
     @Override
     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos)
     {
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileLockableChest) {
-            return Container.calcRedstoneFromInventory(((TileLockableChest) tile).getInventory());
-        }
         return 0;
     }
 
