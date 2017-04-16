@@ -26,8 +26,11 @@ public class Key extends Item {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
-        if (player.isCreative() && world.isRemote && stack.getItemDamage() == 0) {
+        if (player.isCreative() && world.isRemote && stack.getItemDamage() != 1 && !player.isSneaking()) {
             openGUI(player);
+        }
+        else if (!world.isRemote && player.isCreative() && ItemNBTUtils.hasKey(stack, "playerUUID") && player.isSneaking()) {
+            stack.getTagCompound().removeTag("playerUUID");
         }
 
         return super.onItemRightClick(stack, world, player, hand);
@@ -52,7 +55,7 @@ public class Key extends Item {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        if (stack.getItemDamage() == 0) {
+        if (stack.getItemDamage() != 1) {
             if (getShown(stack)) {
                 if (playerIn.isCreative()) {
                     tooltip.add(TextFormatting.GREEN + "Key visible to non-creative players");
@@ -62,6 +65,9 @@ public class Key extends Item {
             else if (playerIn.isCreative()) {
                 tooltip.add(TextFormatting.RED + "Key hidden from non-creative players");
                 tooltip.add(TextFormatting.RED + getKey(stack));
+            }
+            if (ItemNBTUtils.hasKey(stack, "playerUUID") && playerIn.isCreative()) {
+                tooltip.add(TextFormatting.GOLD + "OwnerID: " + ItemNBTUtils.getString(stack, "playerUUID"));
             }
         }
         if (stack.getItemDamage() == 1) {
