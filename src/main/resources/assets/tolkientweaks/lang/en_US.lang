@@ -1,6 +1,9 @@
 item.tolkientweaks:ring.name=The One Ring
 item.tolkientweaks:soul.name=Sauron's Soul
-item.tolkientweaks:key.name=Key
+item.tolkientweaks:key.key.name=Key
+item.tolkientweaks:key.copper_key.name=Copper Key
+item.tolkientweaks:key.silver_key.name=Silver Key
+item.tolkientweaks:key.gold_key.name=Gold Key
 
 item.tolkientweaks:palantir.name=Palantir
 item.tolkientweaks:palantir_shard.name=Palantir Shard

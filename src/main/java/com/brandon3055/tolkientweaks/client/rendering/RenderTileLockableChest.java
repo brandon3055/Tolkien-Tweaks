@@ -17,9 +17,9 @@ import java.util.Calendar;
 public class RenderTileLockableChest extends TileEntitySpecialRenderer<TileLockableChest> {
 
     private static final ResourceLocation TEXTURE_CHRISTMAS_DOUBLE = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
-    private static final ResourceLocation TEXTURE_NORMAL_DOUBLE = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
+    private static final ResourceLocation TEXTURE_NORMAL_DOUBLE = new ResourceLocation("tolkientweaks:textures/model/lockable_double_chest.png");
     private static final ResourceLocation TEXTURE_CHRISTMAS = new ResourceLocation("textures/entity/chest/christmas.png");
-    private static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("textures/entity/chest/normal.png");
+    private static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
     private final ModelChest simpleChest = new ModelChest();
     private final ModelChest largeChest = new ModelLargeChest();
     private boolean isChristmas;

@@ -7,7 +7,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
 
 /**
  * Created by brandon3055 on 16/04/2017.
@@ -65,7 +65,12 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TextComponentTranslation(this.getName());
+//        if (tile.getAdjacentChest() != null) {
+//            return new TextComponentString("Locked Chest");
+//        }
+//        else {
+            return new TextComponentString("Locked Chest");
+//        }
     }
 
     @Override
@@ -171,6 +176,10 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     public int getFieldCount()
     {
         return 0;
+    }
+
+    public boolean isDouble() {
+        return tile.getAdjacentChest() != null;
     }
 
 /*    @Override

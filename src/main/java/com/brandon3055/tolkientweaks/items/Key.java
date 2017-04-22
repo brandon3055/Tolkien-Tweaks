@@ -1,6 +1,7 @@
 package com.brandon3055.tolkientweaks.items;
 
 import codechicken.lib.util.ItemNBTUtils;
+import com.brandon3055.brandonscore.items.ItemBCore;
 import com.brandon3055.tolkientweaks.client.gui.GuiKeyAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,10 +20,17 @@ import java.util.List;
 /**
  * Created by Brandon on 24/01/2015.
  */
-public class Key extends Item {
+public class Key extends ItemBCore {
 	public Key() {
 		this.setMaxStackSize(1);
-	}
+        this.setHasSubtypes(true);
+        this.addName(0, "key");
+        this.addName(1, "key");
+        this.addName(2, "key");
+        this.addName(3, "copper_key");
+        this.addName(4, "silver_key");
+        this.addName(5, "gold_key");
+    }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
@@ -46,6 +54,9 @@ public class Key extends Item {
         subItems.add(new ItemStack(item));
         subItems.add(new ItemStack(item, 1, 1));
         subItems.add(new ItemStack(item, 1, 2));
+        subItems.add(new ItemStack(item, 1, 3));
+        subItems.add(new ItemStack(item, 1, 4));
+        subItems.add(new ItemStack(item, 1, 5));
     }
 
     @Override

@@ -8,6 +8,9 @@
     "type": {
       "key": {"textures": {"layer0": "tolkientweaks:items/key"}},
       "key2": {"textures": {"layer0": "tolkientweaks:items/key2"}},
+      "copper_key": {"textures": {"layer0": "tolkientweaks:items/copper_key"}},
+      "silver_key": {"textures": {"layer0": "tolkientweaks:items/silver_key"}},
+      "gold_key": {"textures": {"layer0": "tolkientweaks:items/gold_key"}},
       "palantir_shard": {"textures": {"layer0": "tolkientweaks:items/palantir_shard"}},
       "soul": {"textures": {"layer0": "tolkientweaks:items/soul"}},
       "east_token": {"textures": {"layer0": "tolkientweaks:items/eastern_alliance_token"}},
