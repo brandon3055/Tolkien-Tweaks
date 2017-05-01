@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.network;
 
+import com.brandon3055.brandonscore.network.MessageHandlerWrapper;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
 import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
@@ -15,7 +16,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -81,10 +81,10 @@ public class PacketMilestone implements IMessage {
         }
     }
 
-    public static class Handler implements IMessageHandler<PacketMilestone, IMessage> {
+    public static class Handler extends MessageHandlerWrapper<PacketMilestone,IMessage> {
 
         @Override
-        public IMessage onMessage(PacketMilestone message, MessageContext ctx) {
+        public IMessage handleMessage(PacketMilestone message, MessageContext ctx) {
             if (ctx.side == Side.CLIENT) {
                 doClientStuff(message, ctx);
             } else {

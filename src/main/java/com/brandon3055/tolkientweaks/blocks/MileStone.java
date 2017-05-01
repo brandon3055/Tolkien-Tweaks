@@ -120,6 +120,7 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
 
         if (tile != null){
             tile.milestonePos.vec.set(placer.posX, placer.posY + 0.5, placer.posZ);
+            tile.markDirty();
         }
     }
 

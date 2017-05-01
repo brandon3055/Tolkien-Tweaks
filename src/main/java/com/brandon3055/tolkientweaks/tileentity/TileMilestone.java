@@ -1,12 +1,13 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
 import com.brandon3055.brandonscore.blocks.TileBCBase;
+import com.brandon3055.brandonscore.lib.TeleportUtils;
 import com.brandon3055.brandonscore.lib.Vec3D;
 import com.brandon3055.brandonscore.network.wrappers.SyncableString;
 import com.brandon3055.brandonscore.network.wrappers.SyncableVec3D;
-import com.brandon3055.brandonscore.utils.Teleporter;
 import com.brandon3055.tolkientweaks.ConfigHandler;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
+import com.brandon3055.tolkientweaks.utils.LogHelper;
 import com.brandon3055.tolkientweaks.utils.TTWorldData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -139,13 +140,14 @@ public class TileMilestone extends TileBCBase {
             return;
         }
 
+        LogHelper.info(milestonePos.vec.y);
         if (milestonePos.vec.y == -1){
             milestonePos.vec = new Vec3D(pos).add(0.5, 2, 0.5);
         }
 
         cooldowns.put(player.getName(), ForgeEventHandler.tick);
 
-        new Teleporter.TeleportLocation(milestonePos.vec.x, milestonePos.vec.y, milestonePos.vec.z, worldObj.provider.getDimension()).teleport(player);
+        TeleportUtils.teleportEntity(player, worldObj.provider.getDimension(), milestonePos.vec.x, milestonePos.vec.y, milestonePos.vec.z);
     }
 
 }
