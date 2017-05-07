@@ -54,6 +54,7 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
     public LockableChest()
     {
         super(Material.WOOD);
+        this.setBlockUnbreakable();
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 
