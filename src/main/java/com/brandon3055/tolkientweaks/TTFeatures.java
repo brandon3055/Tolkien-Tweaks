@@ -46,6 +46,13 @@ public class TTFeatures {
 	@Feature(registryName = "gold_coin", stateOverride = "tt_items#type=gold_coin")
 	public static Item gold_coin = new Item();
 
+
+	@Feature(registryName = "key_chain", stateOverride = "tt_items#type=key_chain")
+	public static KeyChain keyChain = new KeyChain();
+
+	@Feature(registryName = "coin_pouch", stateOverride = "tt_items#type=coin_pouch")
+	public static CoinPouch coinPouch = new CoinPouch();
+
 	//endregion
 
 	//region Blocks

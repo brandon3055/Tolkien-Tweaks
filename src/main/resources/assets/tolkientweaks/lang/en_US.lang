@@ -15,6 +15,9 @@ item.tolkientweaks:brons_coin.name=Copper Coin
 item.tolkientweaks:silver_coin.name=Silver Coin
 item.tolkientweaks:gold_coin.name=Gold Coin
 
+item.tolkientweaks:key_chain.name=Key Ring
+item.tolkientweaks:coin_pouch.name=Coin Pouch
+
 tile.tolkientweaks:structureBuilder.name=Structure Builder
 
 tile.tolkientweaks:smoker.name=Smoker

@@ -1,7 +1,6 @@
 package com.brandon3055.tolkientweaks.container;
 
 import com.brandon3055.brandonscore.utils.ItemNBTHelper;
-import com.brandon3055.tolkientweaks.tileentity.TileLockableChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -12,48 +11,30 @@ import net.minecraft.util.text.TextComponentString;
 /**
  * Created by brandon3055 on 16/04/2017.
  */
-public class InventoryLockableChest implements IInventory/*, IInteractionObject*/ {
-    public TileLockableChest tile;
-    private ItemStack key;
-    private ItemStack[] items = new ItemStack[getSizeInventory()];
-//    private final IInventory upperChest;
-//    private final IInventory lowerChest;
+public class InventoryItemStackStatic implements IInventory {
 
-    public InventoryLockableChest(TileLockableChest tile, ItemStack key)
+    private ItemStack stack;
+    private int stackLimit;
+    private ItemStack[] items = new ItemStack[getSizeInventory()];
+
+    public InventoryItemStackStatic(ItemStack stack, int stackLimit)
     {
-        this.tile = tile;
-        this.key = key;
-//
-//        if (upperChestIn == null)
-//        {
-//            upperChestIn = lowerChestIn;
-//        }
-//
-//        if (lowerChestIn == null)
-//        {
-//            lowerChestIn = upperChestIn;
-//        }
-//
-//        this.upperChest = upperChestIn;
-//        this.lowerChest = lowerChestIn;
+        this.stack = stack;
+        this.stackLimit = stackLimit;
         loadItems();
     }
 
     @Override
     public int getSizeInventory()
     {
-        return 54;
+        return stackLimit;
     }
-//
-//    public boolean isPartOfLargeChest(IInventory inventoryIn)
-//    {
-//        return this.upperChest == inventoryIn || this.lowerChest == inventoryIn;
-//    }
+
 
     @Override
     public String getName()
     {
-        return tile.getName();
+        return stack.getDisplayName();
     }
 
     @Override
@@ -65,12 +46,7 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     @Override
     public ITextComponent getDisplayName()
     {
-//        if (tile.getAdjacentChest() != null) {
-//            return new TextComponentString("Locked Chest");
-//        }
-//        else {
-            return new TextComponentString("Locked Chest");
-//        }
+        return new TextComponentString(stack.getDisplayName());
     }
 
     @Override
@@ -133,21 +109,11 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     @Override
     public void openInventory(EntityPlayer player) {
         loadItems();
-        tile.openChest(player);
-        TileLockableChest adj = tile.getAdjacentChest();
-        if (adj != null) {
-            adj.openChest(player);
-        }
     }
 
     @Override
     public void closeInventory(EntityPlayer player) {
         saveItems();
-        tile.closeChest(player);
-        TileLockableChest adj = tile.getAdjacentChest();
-        if (adj != null) {
-            adj.closeChest(player);
-        }
     }
 
     @Override
@@ -178,27 +144,13 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
         return 0;
     }
 
-    public boolean isDouble() {
-        return tile.getAdjacentChest() != null;
-    }
-
-/*    @Override
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
-        return new ContainerLockableChest(playerInventory, this, playerIn);
-    }
-
-    @Override
-    public String getGuiID() {
-        return "minecraft:chest";
-    }*/
 
     protected void loadItems() {
-        if (key == null) {
+        if (stack == null) {
             return;
         }
 
-        NBTTagCompound compound = ItemNBTHelper.getCompound(key);
+        NBTTagCompound compound = ItemNBTHelper.getCompound(stack);
         NBTTagCompound[] tag = new NBTTagCompound[items.length];
 
         for (int i = 0; i < items.length; i++) {
@@ -208,11 +160,11 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     }
 
     protected void saveItems() {
-        if (key == null) {
+        if (stack == null) {
             return;
         }
 
-        NBTTagCompound compound = ItemNBTHelper.getCompound(key);
+        NBTTagCompound compound = ItemNBTHelper.getCompound(stack);
         NBTTagCompound[] tag = new NBTTagCompound[items.length];
 
         for (int i = 0; i < items.length; i++) {
@@ -229,6 +181,7 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     @Override
     public void clear()
     {
-
+        items = new ItemStack[getSizeInventory()];
+        saveItems();
     }
 }

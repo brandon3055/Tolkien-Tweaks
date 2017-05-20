@@ -18,7 +18,9 @@
       "hype_horn": {"textures": {"layer0": "tolkientweaks:items/hype_horn"}},
       "brons_coin": {"textures": {"layer0": "tolkientweaks:items/brons_coin"}},
       "silver_coin": {"textures": {"layer0": "tolkientweaks:items/silver_coin"}},
-      "gold_coin": {"textures": {"layer0": "tolkientweaks:items/gold_coin"}}
+      "gold_coin": {"textures": {"layer0": "tolkientweaks:items/gold_coin"}},
+      "key_chain": {"textures": {"layer0": "tolkientweaks:items/key_ring"}},
+      "coin_pouch": {"textures": {"layer0": "tolkientweaks:items/coin_pouch"}}
     }
   }
 }
