@@ -3,12 +3,17 @@ package com.brandon3055.tolkientweaks.container;
 import com.brandon3055.brandonscore.inventory.ContainerBCBase;
 import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
+import com.brandon3055.tolkientweaks.utils.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -50,7 +55,7 @@ public class ContainerCoinPouch extends ContainerBCBase {
 
         for (int j = 0; j < numRows; ++j) {
             for (int k = 0; k < 9; ++k) {
-                if (k + j * 9 < itemInventory.getSizeInventory()) {
+                if (k + j * 9 < numSlots) {
                     this.addSlotToContainer(new Slot(itemInventory, k + j * 9, 8 + k * 18, 18 + j * 18) {
                         @Override
                         public boolean isItemValid(@Nullable ItemStack stack) {
@@ -79,17 +84,40 @@ public class ContainerCoinPouch extends ContainerBCBase {
     @Override
     public void detectAndSendChanges() {
         ItemStack stack = player.getHeldItem(hand);
-        if (!player.worldObj.isRemote && (stack == null || ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) != itemTrackingNumber)) {
+        if ((stack == null || ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) != itemTrackingNumber)) {
             player.closeScreen();
+            return;
         }
 
-        super.detectAndSendChanges();
         shiftClicked = false;
+        super.detectAndSendChanges();
+        checkSlots();
+    }
+
+    public void checkSlots() {
+        int n = itemInventory.getSizeInventory();
+        if (n != numSlots) {
+            updateSlots();
+            for (int i = 0; i < this.listeners.size(); ++i) {
+                IContainerListener icrafting = this.listeners.get(i);
+                if (icrafting instanceof EntityPlayerMP) {
+                    icrafting.sendProgressBarUpdate(this, 0, 0);
+                }
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void updateProgressBar(int id, int data) {
+        if (id == 0) {
+            updateSlots();
+        }
     }
 
     @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        if (shiftClicked) {
+        if (shiftClicked || playerIn.worldObj.isRemote) {
             return null;
         }
         shiftClicked = true;
@@ -101,13 +129,16 @@ public class ContainerCoinPouch extends ContainerBCBase {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
+            //To player inventory
             if (index < numSlots) {
-                //if (!this.mergeItemStack(itemstack1, numRows * 9, this.inventorySlots.size(), true)) {
-                return null;
-                //}
+                if (!this.mergeItemStack(itemstack1, numSlots, this.inventorySlots.size(), true)) {
+                    return null;
+                }
             }
-            else if (!this.mergeItemStack(itemstack1, 0, numRows * 9, false)) {
-                return null;
+            else {
+                if (!this.mergeItemStack(itemstack1, 0, numSlots, false)) {
+                    return null;
+                }
             }
 
             if (itemstack1.stackSize == 0) {
@@ -126,10 +157,10 @@ public class ContainerCoinPouch extends ContainerBCBase {
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
         ItemStack stack = super.slotClick(slotId, dragType, clickTypeIn, player);
 
-        int n = itemInventory.getSizeInventory();
-        if (n != numSlots) {
-            updateSlots();
-        }
+//        int n = itemInventory.getSizeInventory();
+//        if (n != numSlots) {
+//            updateRequired = true;
+//        }
 
         return stack;
     }

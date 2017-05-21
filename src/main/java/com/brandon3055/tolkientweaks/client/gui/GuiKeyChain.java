@@ -64,10 +64,7 @@ public class GuiKeyChain extends GuiContainer
         this.ySize = 114 + inventoryRows * 18;
         this.guiTop = (this.height - this.ySize) / 2;
 
-//        if (playerInventory.player.getHeldItem(hand) != stackCache) {
-//            this.mc.thePlayer.closeScreen();
-//            onGuiClosed();
-//        }
+//        ((ContainerKeyChain)super.inventorySlots).checkSlots();
 
         super.updateScreen();
     }

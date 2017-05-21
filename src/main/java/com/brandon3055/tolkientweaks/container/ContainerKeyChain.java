@@ -5,11 +5,15 @@ import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
 import com.brandon3055.tolkientweaks.items.Key;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +28,7 @@ public class ContainerKeyChain extends ContainerBCBase {
     private int numRows;
     private int numSlots;
     private int itemTrackingNumber;
-    boolean shiftClicked = false;
+    private boolean shiftClicked = false;
 
     public ContainerKeyChain(IInventory playerInventory, InventoryItemStackDynamic itemInventory, EntityPlayer player, EnumHand hand) {
         this.player = player;
@@ -82,10 +86,33 @@ public class ContainerKeyChain extends ContainerBCBase {
         ItemStack stack = player.getHeldItem(hand);
         if (!player.worldObj.isRemote && (stack == null || ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) != itemTrackingNumber)) {
             player.closeScreen();
+            return;
         }
 
-        super.detectAndSendChanges();
         shiftClicked = false;
+        super.detectAndSendChanges();
+        checkSlots();
+    }
+
+    public void checkSlots() {
+        int n = itemInventory.getSizeInventory();
+        if (n != numSlots) {
+            updateSlots();
+            for (int i = 0; i < this.listeners.size(); ++i) {
+                IContainerListener icrafting = this.listeners.get(i);
+                if (icrafting instanceof EntityPlayerMP) {
+                    icrafting.sendProgressBarUpdate(this, 0, 0);
+                }
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void updateProgressBar(int id, int data) {
+        if (id == 0) {
+            updateSlots();
+        }
     }
 
     @Nullable
@@ -103,9 +130,9 @@ public class ContainerKeyChain extends ContainerBCBase {
             itemstack = itemstack1.copy();
 
             if (index < numSlots) {
-                //if (!this.mergeItemStack(itemstack1, numRows * 9, this.inventorySlots.size(), true)) {
+                if (!this.mergeItemStack(itemstack1, numRows * 9, this.inventorySlots.size(), true)) {
                 return null;
-                //}
+                }
             }
             else if (!this.mergeItemStack(itemstack1, 0, numRows * 9, false)) {
                 return null;
@@ -126,12 +153,6 @@ public class ContainerKeyChain extends ContainerBCBase {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
         ItemStack stack = super.slotClick(slotId, dragType, clickTypeIn, player);
-
-        int n = itemInventory.getSizeInventory();
-        if (n != numSlots) {
-            updateSlots();
-        }
-
         return stack;
     }
 
