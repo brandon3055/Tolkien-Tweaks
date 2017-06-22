@@ -75,8 +75,8 @@ public class TTFeatures {
 	@Feature(registryName = "camo_glowstone", tileEntity = TileCamoGlowstone.class)
 	public static CamoGlowstone camoGlowstone = new CamoGlowstone();
 
-	@Feature(registryName = "fluid_source", tileEntity = TileFluidSource.class)
-	public static FluidSource fluidSource = new FluidSource();
+	@Feature(registryName = "fluid_source", tileEntity = TileFluidSource2.class)
+	public static FluidSource2 fluidSource = new FluidSource2();
 
 	//endregion
 }

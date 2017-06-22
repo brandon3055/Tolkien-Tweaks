@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.client.rendering.model;
 
+import codechicken.lib.texture.TextureUtils;
 import com.brandon3055.tolkientweaks.blocks.ChameleonBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,8 @@ import java.util.List;
  * Created by brandon3055 on 28/10/2016.
  */
 public class ModelChameleon implements IBakedModel {
+    private TextureAtlasSprite particle = null;
+
     @Override
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         List<BakedQuad> override = null;
@@ -36,7 +39,9 @@ public class ModelChameleon implements IBakedModel {
         }
 
 //        MinecraftForgeClient.getRenderLayer()
-        return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(targetState).getQuads(targetState, side, rand);
+        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(targetState);
+        particle = model.getParticleTexture();
+        return model.getQuads(targetState, side, rand);
     }
 
     @Override
@@ -56,7 +61,10 @@ public class ModelChameleon implements IBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return null;
+        if (particle == null) {
+            particle = TextureUtils.getMissingSprite();
+        }
+        return particle;
     }
 
     @Override
