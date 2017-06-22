@@ -1,102 +1,82 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
 import com.brandon3055.brandonscore.blocks.TileBCBase;
-import com.brandon3055.brandonscore.client.ResourceHelperBC;
-import com.brandon3055.brandonscore.network.PacketTileMessage;
-import com.brandon3055.brandonscore.network.wrappers.SyncableByte;
-import com.brandon3055.brandonscore.network.wrappers.SyncableString;
-import com.brandon3055.tolkientweaks.blocks.ChameleonBlock;
-import com.brandon3055.tolkientweaks.utils.LogHelper;
+import com.brandon3055.brandonscore.lib.IActivatableTile;
+import com.brandon3055.brandonscore.lib.IChangeListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by brandon3055 on 28/10/2016.
  */
-public class TileChameleon extends TileBCBase implements IChameleonStateProvider {
+public class TileFluidSource extends TileBCBase implements IActivatableTile, IChangeListener {
 
-    private final SyncableString blockName = new SyncableString("minecraft:stone", true, false, false);
-    private final SyncableByte blockMeta = new SyncableByte((byte) 0, true, false, false);
-    private ChameleonBlock thisBlock;
-    private IBlockState chameleonState = null;
-    private boolean usingFallbackState = true;
+    private FluidStack fluidStack = null;
 
-    public TileChameleon(ChameleonBlock thisBlock) {
-        this.thisBlock = thisBlock;
-        registerSyncableObject(blockName, true);
-        registerSyncableObject(blockMeta, true);
-        setShouldRefreshOnBlockChange();
+    public TileFluidSource() {
     }
 
     @Override
-    public final IBlockState getChameleonBlockState() {
-        Block block = Block.REGISTRY.getObject(ResourceHelperBC.getResourceRAW(blockName.value));
-        if (block == Blocks.AIR) {
-            LogHelper.warn("TileChameleon: Could not load state from block - " + blockName.value + " With Meta " + blockMeta.value + " Using fallback state.");
-            return Blocks.STONE.getDefaultState();
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (!player.isCreative() || stack == null || !(stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))) {
+            return false;
         }
-        else {
-            return block.getStateFromMeta(blockMeta.value);
-        }
-    }
 
-    @Override
-    public boolean disableCamo() {
+        try {
+            IFluidTankProperties props = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).getTankProperties()[0];
+            fluidStack = props.getContents();
+            onNeighborChange();
+            return true;
+        }
+
+        catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
     @Override
-    public boolean randomBool() {
-        return false;
-    }
-
-    public void setChameleonState(IBlockState chameleonState) {
-        ResourceLocation name = chameleonState.getBlock().getRegistryName();
-        if (name == null) {
-            blockName.value = "minecraft:stone";
-            LogHelper.warn("TileChameleon: The given block dose not seem to be registered " + chameleonState + " Umm..... So.... What?!?! That should not be possible........");
-        }
-        else {
-            blockName.value = name.toString();
-        }
-
-        blockMeta.value = (byte) chameleonState.getBlock().getMetaFromState(chameleonState);
-        thisBlock.setNewChameleonState(worldObj, pos, worldObj.getBlockState(pos), chameleonState);
-        detectAndSendChanges();
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setByte("Meta", blockMeta.value);
-        compound.setString("Name", blockName.value);
-        if (!worldObj.isRemote) {
-            sendPacketToClients(new PacketTileMessage(this, (byte) 0, compound, false), syncRange());
+    public void writeExtraNBT(NBTTagCompound compound) {
+        super.writeExtraNBT(compound);
+        if (fluidStack != null) {
+            NBTTagCompound tag = new NBTTagCompound();
+            fluidStack.writeToNBT(tag);
+            compound.setTag("Fluid", tag);
         }
     }
 
     @Override
-    public void receivePacketFromServer(PacketTileMessage packet) {
-        if (packet.isNBT()) {
-            blockMeta.value = packet.compound.getByte("Meta");
-            blockName.value = packet.compound.getString("Name");
-            updateBlock();
+    public void readExtraNBT(NBTTagCompound compound) {
+        super.readExtraNBT(compound);
+        if (compound.hasKey("Fluid")) {
+            fluidStack = FluidStack.loadFluidStackFromNBT(compound.getCompoundTag("Fluid"));
         }
     }
 
-    public boolean attemptSetFromStack(ItemStack stack) {
-        if (stack == null || !(stack.getItem() instanceof ItemBlock)) {
-            return false;
+    @Override
+    public void onNeighborChange() {
+        if (fluidStack == null || fluidStack.getFluid().getBlock() == null) {
+            return;
         }
-
-        Block block = ((ItemBlock) stack.getItem()).getBlock();
-
-        if (block instanceof ChameleonBlock) {
-            return false;
+        Block block = fluidStack.getFluid().getBlock();
+        for (EnumFacing facing : EnumFacing.values()) {
+            BlockPos side = pos.offset(facing);
+            if (worldObj.isAirBlock(side)) {
+                worldObj.setBlockState(side, block.getDefaultState());
+                worldObj.notifyBlockOfStateChange(side, block);
+            }
         }
-
-        setChameleonState(block.getStateFromMeta(stack.getItemDamage()));
-        return true;
     }
 }

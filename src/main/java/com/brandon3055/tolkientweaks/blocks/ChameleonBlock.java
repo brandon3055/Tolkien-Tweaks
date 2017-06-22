@@ -9,6 +9,7 @@ import com.brandon3055.tolkientweaks.client.UnlistedStateProperty;
 import com.brandon3055.tolkientweaks.client.rendering.model.ModelChameleon;
 import com.brandon3055.tolkientweaks.tileentity.IChameleonStateProvider;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -43,6 +44,10 @@ public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvi
     //Because i need a random bool for stuff and things... This isnt exactly a "polished" abstract block.
     public static final UnlistedBooleanProperty RANDOM_BOOL = new UnlistedBooleanProperty("random_bool");
     public static final PropertyBool FULL_CUBE = PropertyBool.create("full_cube");
+
+    public ChameleonBlock(Material material) {
+        super(material);
+    }
 
     /**
      * Don't forget to call super(); if you create a new constructor because this is where the default state is set.

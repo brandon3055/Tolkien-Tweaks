@@ -72,5 +72,11 @@ public class TTFeatures {
 	@Feature(registryName = "lockable_chest", tileEntity = TileLockableChest.class)
 	public static LockableChest lockableChest = new LockableChest();
 
+	@Feature(registryName = "camo_glowstone", tileEntity = TileCamoGlowstone.class)
+	public static CamoGlowstone camoGlowstone = new CamoGlowstone();
+
+	@Feature(registryName = "fluid_source", tileEntity = TileFluidSource.class)
+	public static FluidSource fluidSource = new FluidSource();
+
 	//endregion
 }

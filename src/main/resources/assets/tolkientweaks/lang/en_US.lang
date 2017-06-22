@@ -19,15 +19,12 @@ item.tolkientweaks:key_chain.name=Key Ring
 item.tolkientweaks:coin_pouch.name=Coin Pouch
 
 tile.tolkientweaks:structureBuilder.name=Structure Builder
-
 tile.tolkientweaks:smoker.name=Smoker
-
 tile.tolkientweaks:camo_chest.name=Camouflage Chest
-
 tile.tolkientweaks:camo_keystone.name=Camouflaged Key Stone
-
 tile.tolkientweaks:milestone.name=Milestone
-
+tile.tolkientweaks:camo_glowstone.name=Camouflaged Glowstone
+tile.tolkientweaks:fluid_source.name=Stone
 
 entity.TolkienTweaks.Backpack.name=Backpack
 
