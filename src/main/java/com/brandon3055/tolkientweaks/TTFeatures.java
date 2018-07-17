@@ -4,7 +4,6 @@ import com.brandon3055.brandonscore.config.Feature;
 import com.brandon3055.tolkientweaks.blocks.*;
 import com.brandon3055.tolkientweaks.items.*;
 import com.brandon3055.tolkientweaks.tileentity.*;
-import net.minecraft.item.Item;
 
 /**
  * Created by Brandon on 13/01/2015.
@@ -38,13 +37,13 @@ public class TTFeatures {
 	public static Palantir palantir = new Palantir();										//.setUnlocalizedName(TolkienTweaks.MODID.toLowerCase()+":hypeHorn").setCreativeTab(CreativeTabs.tabMisc).setTextureName(TolkienTweaks.MODID.toLowerCase()+":hypeHorn");
 
 	@Feature(registryName = "brons_coin", stateOverride = "tt_items#type=brons_coin")
-	public static Item brons_coin = new Item();
+	public static Coin brons_coin = new Coin();
 
 	@Feature(registryName = "silver_coin", stateOverride = "tt_items#type=silver_coin")
-	public static Item silver_coin = new Item();
+	public static Coin silver_coin = new Coin();
 
 	@Feature(registryName = "gold_coin", stateOverride = "tt_items#type=gold_coin")
-	public static Item gold_coin = new Item();
+	public static Coin gold_coin = new Coin();
 
 
 	@Feature(registryName = "key_chain", stateOverride = "tt_items#type=key_chain")

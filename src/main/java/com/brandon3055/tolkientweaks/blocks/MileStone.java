@@ -45,7 +45,6 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     public MileStone() {
         setDefaultState(blockState.getBaseState().withProperty(IS_SLAVE_BLOCK, false));
         this.setBlockUnbreakable();
-        setIsFullCube(false);
     }
 
     @Override
@@ -64,6 +63,11 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     }
 
     //region Render
+
+    @Override
+    public boolean uberIsBlockFullCube() {
+        return false;
+    }
 
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {

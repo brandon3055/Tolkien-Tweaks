@@ -1,15 +1,23 @@
 package com.brandon3055.tolkientweaks;
 
 
+import codechicken.lib.inventory.InventoryUtils;
 import com.brandon3055.brandonscore.client.gui.GuiButtonAHeight;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
+import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
+import com.brandon3055.tolkientweaks.items.Coin;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,6 +35,31 @@ public class ForgeEventHandler {
     public void tickEvent(TickEvent.ServerTickEvent event){
         if (event.phase == TickEvent.Phase.START) {
             tick++;
+        }
+    }
+
+    @SubscribeEvent
+    public void renderPlayerPre(EntityItemPickupEvent event) {
+        EntityItem item = event.getItem();
+        ItemStack coins = item.getEntityItem();
+
+        if (coins != null && coins.getItem() instanceof Coin && !item.isDead) {
+            EntityPlayer player = event.getEntityPlayer();
+
+            for (ItemStack stack : player.inventory.mainInventory) {
+                if (stack != null && stack.getItem() == TTFeatures.coinPouch) {
+                    InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
+                    int remainder = InventoryUtils.insertItem(inventory, coins, false);
+                    coins.stackSize = remainder;
+                    if (remainder == 0) {
+                        item.setDead();
+                        event.setResult(Event.Result.DENY);
+                        player.worldObj.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_ITEM_PICKUP, player.getSoundCategory(), 0.2F, ((player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                        player.worldObj.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, player.getSoundCategory(), 0.2F, ((player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.7F + 1.0F));
+                        return;
+                    }
+                }
+            }
         }
     }
 

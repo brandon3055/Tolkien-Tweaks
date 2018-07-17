@@ -36,12 +36,16 @@ public class CamoChest extends BlockBCore implements ITileEntityProvider, ICusto
     public CamoChest() {
         this.setHardness(2.5F);
         this.setResistance(5F);
-        setIsFullCube(false);
     }
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return AABB;
+    }
+
+    @Override
+    public boolean uberIsBlockFullCube() {
+        return false;
     }
 
 //	@Override
