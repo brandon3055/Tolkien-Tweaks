@@ -1,13 +1,13 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
+import codechicken.lib.data.MCDataInput;
 import com.brandon3055.brandonscore.BrandonsCore;
 import com.brandon3055.brandonscore.blocks.TileBCBase;
 import com.brandon3055.brandonscore.lib.IActivatableTile;
 import com.brandon3055.brandonscore.lib.IRedstoneEmitter;
-import com.brandon3055.brandonscore.network.PacketTileMessage;
-import com.brandon3055.brandonscore.network.wrappers.SyncableBool;
-import com.brandon3055.brandonscore.network.wrappers.SyncableInt;
-import com.brandon3055.brandonscore.network.wrappers.SyncableString;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedBool;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedInt;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedString;
 import com.brandon3055.tolkientweaks.TTFeatures;
 import com.brandon3055.tolkientweaks.client.gui.GuiKeyAccess;
 import com.brandon3055.tolkientweaks.items.Key;
@@ -29,47 +29,36 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
-
 /**
  * Created by Brandon on 8/02/2015.
  */
 public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITickable, IActivatableTile, IKeyAccessTile {
 
-    public final SyncableString keyCode = new SyncableString("", true, false);
-    public final SyncableInt delay = new SyncableInt(10, true, false);
-    public final SyncableBool consumeKey = new SyncableBool(false, true, false);
-    public final SyncableBool toggleMode = new SyncableBool(false, true, false);
-//    public final SyncableBool permanent = new SyncableBool(false, true, false);
-    public final SyncableBool active = new SyncableBool(false, false, false);
-    public final SyncableInt timeActive = new SyncableInt(10, false, false);
+    public final ManagedString keyCode = register("key_code", new ManagedString("")).syncViaTile().saveToTile().finish();
+    public final ManagedInt delay = register("delay", new ManagedInt(10)).syncViaTile().saveToTile().finish();
+    public final ManagedBool consumeKey = register("consume_key", new ManagedBool(false)).syncViaTile().saveToTile().finish();
+    public final ManagedBool active = register("active", new ManagedBool(false)).saveToTile().finish();
+    public final ManagedInt timeActive = register("time_active", new ManagedInt(10)).saveToTile().finish();
     public Mode mode = Mode.BUTTON;
     public boolean disableCamo = false;
 
     public TileKeyStone() {
         super(TTFeatures.camoKeystone);
-        registerSyncableObject(keyCode, true);
-        registerSyncableObject(delay, true);
-        registerSyncableObject(consumeKey, true);
-        registerSyncableObject(toggleMode, true);
-//        registerSyncableObject(permanent, true);
-        registerSyncableObject(active, true);
-        registerSyncableObject(timeActive, true);
     }
 
     @Override
     public void update() {
-        detectAndSendChanges();
+        super.update();
 
         if (mode == Mode.BUTTON && active.value && timeActive.value++ > delay.value) {
             timeActive.value = 0;
             active.value = false;
             updateBlock();
-            worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
-            worldObj.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F, false);
+            world.notifyNeighborsOfStateChange(pos, getBlockType(), true);
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F, false);
         }
 
-        if (worldObj.isRemote) {
+        if (world.isRemote) {
             EntityPlayer player = BrandonsCore.proxy.getClientPlayer();
 
             if (player == null) {
@@ -77,7 +66,7 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
             }
 
             ItemStack key = player.getHeldItemMainhand();
-            boolean shouldDisableCamo = (key != null && key.getItem() == TTFeatures.key && (((Key)key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1));
+            boolean shouldDisableCamo = (!key.isEmpty() && key.getItem() == TTFeatures.key && (((Key) key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1));
 
             if (shouldDisableCamo != disableCamo) {
                 disableCamo = shouldDisableCamo;
@@ -86,10 +75,12 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
         }
     }
 
+
     @Override
-    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (player.isCreative() && stack == null) {
-            if (worldObj.isRemote) {
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        ItemStack stack = player.getHeldItem(hand);
+        if (player.isCreative() && stack.isEmpty()) {
+            if (world.isRemote) {
                 openGUI();
             }
             return true;
@@ -116,42 +107,37 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
         }
 
         if (active.value) {
-            worldObj.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
+            world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
         }
         else {
-            worldObj.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
+            world.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
         }
 
-        if (worldObj.isRemote) {
+        if (world.isRemote) {
             return true;
         }
 
         if (consumeKey.value && !player.isCreative()) {
-            stack.stackSize--;
-            if (stack.stackSize <= 0) {
-                player.setHeldItem(hand, null);
-            }
-            else {
-                player.setHeldItem(hand, stack);
-            }
+            stack.shrink(1);
+            player.setHeldItem(hand, stack);
         }
 
-        worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
+        world.notifyNeighborsOfStateChange(pos, getBlockType(), true);
 
         return true;
     }
 
     @SideOnly(Side.CLIENT)
     public void openGUI() {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyAccess(Minecraft.getMinecraft().thePlayer, this));
+        Minecraft.getMinecraft().displayGuiScreen(new GuiKeyAccess(Minecraft.getMinecraft().player, this));
     }
 
     @Override
-    public void receivePacketFromClient(PacketTileMessage packet, EntityPlayerMP client) {
+    public void receivePacketFromClient(MCDataInput data, EntityPlayerMP client, int id) {
         if (!client.capabilities.isCreativeMode) {
             return;
         }
-        switch (packet.getIndex()) {
+        switch (id) {
             case 0:
                 consumeKey.value = !consumeKey.value;
                 break;
@@ -174,16 +160,17 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
             case 3:
                 active.value = false;
                 updateBlock();
-                worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
+                world.notifyNeighborsOfStateChange(pos, getBlockType(), true);
                 break;
             case 4:
-                keyCode.value = packet.stringValue;
+                keyCode.value = data.readString();
                 break;
             case 5:
                 try {
-                    delay.value = Integer.parseInt(packet.stringValue);
-                }catch (Exception e) {
-                    client.addChatComponentMessage(new TextComponentString("Error parsing string! Is " + packet.stringValue +" a valid number?").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
+                    delay.value = Integer.parseInt(data.readString());
+                }
+                catch (Exception e) {
+                    client.sendMessage(new TextComponentString("Error parsing string! Is " + data.readString() + " a valid number?").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
                 }
                 break;
         }
@@ -206,12 +193,12 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     }
 
     private boolean isKeyValid(ItemStack key, EntityPlayer player) {
-		if (key != null && key.getItem() == TTFeatures.key && (((Key)key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1)) {
-			return true;
-		}
-        if (worldObj.isRemote) {
+        if (key != null && key.getItem() == TTFeatures.key && (((Key) key.getItem()).getKey(key).equals(keyCode.value) || key.getItemDamage() == 1)) {
+            return true;
+        }
+        if (world.isRemote) {
             if (key != null && key.getItem() == TTFeatures.key) {
-                player.addChatComponentMessage(new TextComponentTranslation("msg.tolkienaddon.keyWrong.txt"));
+                player.sendMessage(new TextComponentTranslation("msg.tolkienaddon.keyWrong.txt"));
             }
         }
         return false;
@@ -282,6 +269,8 @@ public class TileKeyStone extends TileChameleon implements IRedstoneEmitter, ITi
     //endregion
 
     public enum Mode {
-        PERMANENT, BUTTON, TOGGLE;
+        PERMANENT,
+        BUTTON,
+        TOGGLE;
     }
 }

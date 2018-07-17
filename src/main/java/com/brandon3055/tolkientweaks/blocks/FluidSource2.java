@@ -1,7 +1,7 @@
 package com.brandon3055.tolkientweaks.blocks;
 
 
-import codechicken.lib.model.bakery.PlanarFaceBakery;
+import codechicken.lib.model.PlanarFaceBakery;
 import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.tileentity.TileCamoGlowstone;
 import com.brandon3055.tolkientweaks.tileentity.TileChameleon;
@@ -18,7 +18,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -44,11 +43,6 @@ public class FluidSource2 extends ChameleonBlock<TileFluidSource2> {
     @Override
     public TileFluidSource2 createChameleonTile(World worldIn, int meta) {
         return new TileFluidSource2();
-    }
-
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-        return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -83,7 +77,7 @@ public class FluidSource2 extends ChameleonBlock<TileFluidSource2> {
                 return state.getBlockHardness(world, pos);
             }
             catch (Throwable e) {
-                return state.getBlock().blockHardness;
+                return 1.5F;
             }
         }
         return super.getBlockHardness(blockState, world, pos);

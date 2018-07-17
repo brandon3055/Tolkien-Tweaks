@@ -26,7 +26,7 @@ public class GuiKeyChain extends GuiContainer
 
     public GuiKeyChain(InventoryItemStackDynamic inventoryItem, InventoryPlayer playerInv, EnumHand hand)
     {
-        super(new ContainerKeyChain(playerInv, inventoryItem, Minecraft.getMinecraft().thePlayer, hand));
+        super(new ContainerKeyChain(playerInv, inventoryItem, Minecraft.getMinecraft().player, hand));
         this.inventoryItem = inventoryItem;
         this.playerInventory = playerInv;
         this.hand = hand;
@@ -36,12 +36,21 @@ public class GuiKeyChain extends GuiContainer
         this.stackCache = playerInv.player.getHeldItem(hand);
     }
 
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-    {
-        this.fontRendererObj.drawString(I18n.format(inventoryItem.getDisplayName().getUnformattedText()), 8, 6, 4210752);
-        this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @Override
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    {
+        this.fontRenderer.drawString(I18n.format(inventoryItem.getDisplayName().getUnformattedText()), 8, 6, 4210752);
+        this.fontRenderer.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+    }
+
+    @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

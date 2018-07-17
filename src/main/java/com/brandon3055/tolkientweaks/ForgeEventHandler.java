@@ -32,10 +32,12 @@ public class ForgeEventHandler {
 
 	@SubscribeEvent
 	public void itemTossEvent(ItemTossEvent event){
-		if (event.getEntityItem() != null && event.getEntityItem().getEntityItem() != null && (event.getEntityItem().getEntityItem().getItem() == TTFeatures.ring || event.getEntityItem().getEntityItem().getItem() == TTFeatures.palantir) && event.getPlayer() != null)
+        ItemStack stack = event.getEntityItem().getItem();
+		if (!stack.isEmpty() && (stack.getItem() == TTFeatures.ring || stack.getItem() == TTFeatures.palantir) && event.getPlayer() != null)
 		{
-			ItemStack stack = event.getEntityItem().getEntityItem();
-			if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+			if (!stack.hasTagCompound()) {
+			    stack.setTagCompound(new NBTTagCompound());
+            }
 			stack.getTagCompound().setString("PlayerUUID", event.getPlayer().getUniqueID().toString());
 		}
 	}

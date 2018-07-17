@@ -2,19 +2,22 @@ package com.brandon3055.tolkientweaks.items;
 
 import codechicken.lib.util.ItemNBTUtils;
 import com.brandon3055.brandonscore.items.ItemBCore;
+import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.client.gui.GuiKeyAccess;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -33,7 +36,8 @@ public class Key extends ItemBCore {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	    ItemStack stack = player.getHeldItem(hand);
         if (player.isCreative() && world.isRemote && stack.getItemDamage() != 1 && !player.isSneaking()) {
             openGUI(player);
         }
@@ -41,7 +45,7 @@ public class Key extends ItemBCore {
             stack.getTagCompound().removeTag("playerUUID");
         }
 
-        return super.onItemRightClick(stack, world, player, hand);
+        return super.onItemRightClick(world, player, hand);
     }
 
     @SideOnly(Side.CLIENT)
@@ -50,13 +54,15 @@ public class Key extends ItemBCore {
     }
 
     @Override
-    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> subItems) {
-        subItems.add(new ItemStack(item));
-        subItems.add(new ItemStack(item, 1, 1));
-        subItems.add(new ItemStack(item, 1, 2));
-        subItems.add(new ItemStack(item, 1, 3));
-        subItems.add(new ItemStack(item, 1, 4));
-        subItems.add(new ItemStack(item, 1, 5));
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (isInCreativeTab(tab)) {
+            items.add(new ItemStack(this));
+            items.add(new ItemStack(this, 1, 1));
+            items.add(new ItemStack(this, 1, 2));
+            items.add(new ItemStack(this, 1, 3));
+            items.add(new ItemStack(this, 1, 4));
+            items.add(new ItemStack(this, 1, 5));
+        }
     }
 
     @Override
@@ -64,20 +70,22 @@ public class Key extends ItemBCore {
         return stack.getItemDamage() == 1;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	    EntityPlayer player = TolkienTweaks.proxy.getClientPlayer();
         if (stack.getItemDamage() != 1) {
             if (getShown(stack)) {
-                if (playerIn.isCreative()) {
+                if (player.isCreative()) {
                     tooltip.add(TextFormatting.GREEN + "Key visible to non-creative players");
                 }
                 tooltip.add(TextFormatting.GOLD + getKey(stack));
             }
-            else if (playerIn.isCreative()) {
+            else if (player != null && player.isCreative()) {
                 tooltip.add(TextFormatting.RED + "Key hidden from non-creative players");
                 tooltip.add(TextFormatting.RED + getKey(stack));
             }
-            if (ItemNBTUtils.hasKey(stack, "playerUUID") && playerIn.isCreative()) {
+            if (ItemNBTUtils.hasKey(stack, "playerUUID") && player != null && player.isCreative()) {
                 tooltip.add(TextFormatting.GOLD + "OwnerID: " + ItemNBTUtils.getString(stack, "playerUUID"));
             }
         }
@@ -86,7 +94,7 @@ public class Key extends ItemBCore {
         }
 
 
-        super.addInformation(stack, playerIn, tooltip, advanced);
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     public void setKey(ItemStack stack, String key) {

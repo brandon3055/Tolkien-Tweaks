@@ -36,22 +36,22 @@ public class GuiMilestone extends GuiScreen {
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         drawDefaultBackground();
 
-        drawCenteredString(fontRendererObj, "Milestone", width / 2, height / 2 - 100, 0xFFFFFF);
+        drawCenteredString(fontRenderer, "Milestone", width / 2, height / 2 - 100, 0xFFFFFF);
         if (error == null){
-            drawCenteredString(fontRendererObj, TextFormatting.DARK_GREEN + "Destination: " + TextFormatting.GOLD + milestone.replace("_", " "), width / 2, height / 2 - 85, 0xFFFFFF);
+            drawCenteredString(fontRenderer, TextFormatting.DARK_GREEN + "Destination: " + TextFormatting.GOLD + milestone.replace("_", " "), width / 2, height / 2 - 85, 0xFFFFFF);
         }
         else {
-            drawCenteredString(fontRendererObj, "Error: " + error, width / 2, height / 2 - 85, 0xFF0000);
+            drawCenteredString(fontRenderer, "Error: " + error, width / 2, height / 2 - 85, 0xFF0000);
         }
 
         if (time > 0){
-            drawCenteredString(fontRendererObj, TextFormatting.DARK_RED + "Cool Down: " + TextFormatting.DARK_PURPLE + "" + time / 20 + " seconds", width / 2, height / 2 - 70, 0xFFFFFF);
+            drawCenteredString(fontRenderer, TextFormatting.DARK_RED + "Cool Down: " + TextFormatting.DARK_PURPLE + "" + time / 20 + " seconds", width / 2, height / 2 - 70, 0xFFFFFF);
         }
 
         drawGradientRect(width / 2 - 205, height / 2 + 45, width / 2 + 210, height / 2 + 98, 0xFFFFFFFF, 0xFFFFFFFF);
         drawGradientRect(width / 2 - 204, height / 2 + 46, width / 2 + 209, height / 2 + 97, 0xFF000000, 0xFF000000);
 
-        fontRendererObj.drawSplitString("Milestones are special markers located in a variety of locations throughout Middle-earth and the overworld that will allow you to quickly return once it has been activated.  Only one is allowed to be activated at any given time and you can only choose a new one every "+ ConfigHandler.milestoneCoolDown / 60 + " minutes. They are simply for the purpose of returning to the selected location and are a one-way trip.", width / 2 - 200,  height / 2 + 50, 400, 0x999999);
+        fontRenderer.drawSplitString("Milestones are special markers located in a variety of locations throughout Middle-earth and the overworld that will allow you to quickly return once it has been activated.  Only one is allowed to be activated at any given time and you can only choose a new one every "+ ConfigHandler.milestoneCoolDown / 60 + " minutes. They are simply for the purpose of returning to the selected location and are a one-way trip.", width / 2 - 200,  height / 2 + 50, 400, 0x999999);
 
         super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
     }

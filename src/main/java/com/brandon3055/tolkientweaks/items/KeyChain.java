@@ -15,10 +15,10 @@ import net.minecraft.world.World;
 public class KeyChain extends ItemBCore {
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
         if (!worldIn.isRemote) {
             playerIn.openGui(TolkienTweaks.instance, GuiHandler.ID_KEYCHAIN, worldIn, 0, 0, 0);
         }
-        return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand);
+        return super.onItemRightClick(worldIn, playerIn, hand);
     }
 }

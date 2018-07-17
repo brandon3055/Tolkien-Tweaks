@@ -8,6 +8,7 @@ import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import com.brandon3055.tolkientweaks.network.PacketSetKey;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -30,22 +31,15 @@ public class CommonProxy {
 	}
 
 	public void registerEntities() {
-		EntityRegistry.registerModEntity(EntityRing.class, "Ring", 0, TolkienTweaks.instance, 256, 5, true);
-		EntityRegistry.registerModEntity(EntityPersistentItem.class, "PersistantItem", 1, TolkienTweaks.instance, 32, 5, true);
-		EntityRegistry.registerModEntity(EntityPalantir.class, "Palantir", 2, TolkienTweaks.instance, 256, 5, true);
-        EntityRegistry.registerModEntity(EntityBackpack.class, "Backpack", 3, TolkienTweaks.instance, 32, 5, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(TolkienTweaks.MODID, "ring"), EntityRing.class, "Ring", 0, TolkienTweaks.instance, 256, 5, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(TolkienTweaks.MODID, "persistant_item"), EntityPersistentItem.class, "PersistantItem", 1, TolkienTweaks.instance, 32, 5, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(TolkienTweaks.MODID, "palantir"), EntityPalantir.class, "Palantir", 2, TolkienTweaks.instance, 256, 5, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(TolkienTweaks.MODID, "backpack"), EntityBackpack.class, "Backpack", 3, TolkienTweaks.instance, 32, 5, true);
 	}
 
 	public void registerListeners() {
 		MinecraftForge.EVENT_BUS.register(new ForgeEventHandler());
 	}
-
-//	public void registerTileEntities() {
-//		GameRegistry.registerTileEntity(TileSmoker.class, TolkienTweaks.RPREFIX + "tileSmoker");
-//		GameRegistry.registerTileEntity(TileCamoChest.class, TolkienTweaks.RPREFIX + "TileCamoChest");
-//		GameRegistry.registerTileEntity(TileKeyStone.class, TolkienTweaks.RPREFIX + "TileKeyStone");
-//        GameRegistry.registerTileEntity(TileMilestone.class, TolkienTweaks.RPREFIX + "TileMilestone");
-//	}
 
 	public void initializeNetwork() {
 		TolkienTweaks.network = NetworkRegistry.INSTANCE.newSimpleChannel(TolkienTweaks.networkChannelName);
@@ -57,7 +51,7 @@ public class CommonProxy {
 	public boolean isOp(String paramString) {
 		MinecraftServer localMinecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
 		paramString = paramString.trim();
-		for (String str : localMinecraftServer.getPlayerList().getAllUsernames()) {
+		for (String str : localMinecraftServer.getPlayerList().getOppedPlayerNames()) {
 			if (paramString.equalsIgnoreCase(str)) {
 				return true;
 			}
@@ -74,8 +68,4 @@ public class CommonProxy {
 	{
 		return null;
 	}
-//
-//	public int getCammoChestRenderpass() {
-//		return -1;
-//	}
 }

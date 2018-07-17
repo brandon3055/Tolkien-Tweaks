@@ -1,18 +1,13 @@
 package com.brandon3055.tolkientweaks.client;
 
-import codechicken.lib.model.loader.CCBakedModelLoader;
 import codechicken.lib.texture.TextureUtils;
 import com.brandon3055.tolkientweaks.CommonProxy;
-import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.client.rendering.RenderEntityBackpack;
 import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.entity.EntityBackpack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -21,15 +16,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  */
 public class ClientProxy extends CommonProxy {
 
-//	public static int renderPass;
-//	private static int cammoChestRenderpass;
-
-
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
 		registerRendering();
-		TolkienTweaks.featureParser.registerRendering();
 		TextureUtils.addIconRegister(new TTTextureCache());
 	}
 
@@ -39,21 +29,8 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	public void registerRendering() {
-//		MinecraftForgeClient.registerItemRenderer(ModItems.ring, new ItemRingRenderer());
-//		cammoChestRenderpass = RenderingRegistry.getNextAvailableRenderId();
-//		RenderingRegistry.registerBlockHandler(cammoChestRenderpass, new RenderCamoChest());
-//		MinecraftForgeClient.registerItemRenderer(ModItems.palantir, new RenderPalantir());
-
-		CCBakedModelLoader.registerLoader(TTBakedModelProvider.INSTANCE);
-		RenderingRegistry.registerEntityRenderingHandler(EntityBackpack.class, new IRenderFactory<EntityBackpack>() {
-			@Override
-			public Render<? super EntityBackpack> createRenderFor(RenderManager manager) {
-				return new RenderEntityBackpack(manager);
-			}
-		});
-
-//        ClientRegistry.bindTileEntitySpecialRenderer(TileMilestone.class, new RenderTileMilestone());
-    }
+		RenderingRegistry.registerEntityRenderingHandler(EntityBackpack.class, RenderEntityBackpack::new);
+	}
 
 	@Override
 	public void registerListeners() {
@@ -61,10 +38,9 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
 	}
 
-
 	public boolean isOp(String paramString)
 	{
-		return Minecraft.getMinecraft().theWorld.getWorldInfo().getGameType().isCreative();
+		return Minecraft.getMinecraft().world.getWorldInfo().getGameType().isCreative();
 	}
 
 	@Override
@@ -74,11 +50,6 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public EntityPlayer getClientPlayer() {
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
-
-//	@Override
-//	public int getCammoChestRenderpass() {
-//		return cammoChestRenderpass;
-//	}
 }

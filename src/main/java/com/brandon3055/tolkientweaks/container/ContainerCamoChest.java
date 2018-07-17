@@ -32,13 +32,13 @@ public class ContainerCamoChest extends ContainerBCBase<TileCamoChest> {
 				addSlotToContainer(new Slot(tile, x + y * 9, 8 + 18 * x, 18 + y * 18));
 			}
 		}
-		player.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+		player.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
 	public void onContainerClosed(EntityPlayer player) {
 		super.onContainerClosed(player);
-		player.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, player.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+		player.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, player.world.rand.nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
@@ -53,28 +53,28 @@ public class ContainerCamoChest extends ContainerBCBase<TileCamoChest> {
 
 			if (i >= 36){
 				if (!mergeItemStack(stack, 0, 36, false)){
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}else if (!mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)){
-				return null;
+				return ItemStack.EMPTY;
 			}
 
-			if (stack.stackSize == 0) {
-				slot.putStack(null);
+			if (stack.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
 			}else{
 				slot.onSlotChanged();
 			}
 
-			slot.onPickupFromSlot(player, stack);
+			slot.onTake(player, stack);
 
 			return result;
 		}
 
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tile.isUseableByPlayer(player);
+		return tile.isUsableByPlayer(player);
 	}
 }

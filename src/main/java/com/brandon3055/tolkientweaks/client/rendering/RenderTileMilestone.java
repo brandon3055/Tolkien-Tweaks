@@ -5,9 +5,9 @@ import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
@@ -26,7 +26,7 @@ public class RenderTileMilestone extends TileEntitySpecialRenderer<TileMilestone
     public static ResourceLocation texture = new ResourceLocation("tolkientweaks:textures/blocks/milestone.png");
 
     @Override
-    public void renderTileEntityAt(TileMilestone te, double x, double y, double z, float partialTick, int destroyStage) {
+    public void render(TileMilestone te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 1.79, z + 0.5);
 
@@ -34,8 +34,7 @@ public class RenderTileMilestone extends TileEntitySpecialRenderer<TileMilestone
         GL11.glRotated(180, 0, 0, 1);
         bindTexture(texture);
 
-        boolean active = te.users.contains(Minecraft.getMinecraft().thePlayer.getName());
-//        LogHelper.info(te.users+" "+te.getPos());
+        boolean active = te.users.contains(Minecraft.getMinecraft().player.getName());
 
         model.render(null, 0, 0, 0, 0, 0, 1F/16F);
 
@@ -84,7 +83,7 @@ public class RenderTileMilestone extends TileEntitySpecialRenderer<TileMilestone
 
         ResourceHelperBC.bindTexture(ResourceHelperBC.getResourceRAW("draconicevolution:textures/blocks/dislocator_pedestal.png"));//todo
 
-        drawNameString(te, te.markerName.value.replace("_", " "), 0, partialTick);
+        drawNameString(te, te.markerName.value.replace("_", " "), 0, partialTicks);
 
         GL11.glPopMatrix();
 
@@ -94,14 +93,14 @@ public class RenderTileMilestone extends TileEntitySpecialRenderer<TileMilestone
     }
 
     private void drawNameString(TileEntity tileentity, String name, float rotation, float f) {
-        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
 
         if (name.isEmpty()) {
             return;
         }
 
 
-        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;//RenderManager.instance.getFontRenderer();
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;//RenderManager.instance.getFontRenderer();
         Tessellator tess = Tessellator.getInstance();
 
         GL11.glPushMatrix();
@@ -130,13 +129,13 @@ public class RenderTileMilestone extends TileEntitySpecialRenderer<TileMilestone
         GL11.glColor4f(0f, 0f, 0f, 0.5f);
 
 
-        VertexBuffer buffer = tess.getBuffer();
+        BufferBuilder buffer = tess.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-        buffer.pos(xmin, ymax, 0).tex(xmin / 64, 1);
-        buffer.pos(xmax, ymax, 0).tex(xmax / 64, 1);
-        buffer.pos(xmax, ymin, 0).tex(xmax / 64, 0.75);
-        buffer.pos(xmin, ymin, 0).tex(xmin / 64, 0.75);
+        buffer.pos(xmin, ymax, 0).tex(xmin / 64D, 1);
+        buffer.pos(xmax, ymax, 0).tex(xmax / 64D, 1);
+        buffer.pos(xmax, ymin, 0).tex(xmax / 64D, 0.75);
+        buffer.pos(xmin, ymin, 0).tex(xmin / 64D, 0.75);
         tess.draw();
 
         GL11.glDisable(GL11.GL_BLEND);

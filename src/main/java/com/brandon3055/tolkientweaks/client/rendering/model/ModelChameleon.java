@@ -38,7 +38,6 @@ public class ModelChameleon implements IBakedModel {
             targetState = Blocks.STONE.getDefaultState();
         }
 
-//        MinecraftForgeClient.getRenderLayer()
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(targetState);
         particle = model.getParticleTexture();
         return model.getQuads(targetState, side, rand);

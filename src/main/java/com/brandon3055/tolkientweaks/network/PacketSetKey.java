@@ -44,10 +44,10 @@ public class PacketSetKey implements IMessage {
 
         @Override
         public IMessage handleMessage(PacketSetKey message, MessageContext ctx) {
-            if (ctx.side == Side.SERVER && ctx.getServerHandler().playerEntity.isCreative()) {
-                ItemStack stack = ctx.getServerHandler().playerEntity.getHeldItemMainhand();
-                if (stack == null || stack.getItem() != TTFeatures.key) {
-                    ctx.getServerHandler().playerEntity.addChatComponentMessage(new TextComponentString("You are not holding a key!... Wait... Didnt you just right click a key to get that GUI? Im confused..."));
+            if (ctx.side == Side.SERVER && ctx.getServerHandler().player.isCreative()) {
+                ItemStack stack = ctx.getServerHandler().player.getHeldItemMainhand();
+                if (stack.isEmpty()|| stack.getItem() != TTFeatures.key) {
+                    ctx.getServerHandler().player.sendMessage(new TextComponentString("You are not holding a key!... Wait... Didnt you just right click a key to get that GUI? Im confused..."));
                     return null;
                 }
                 ((Key)stack.getItem()).setKey(stack, message.keyCode);

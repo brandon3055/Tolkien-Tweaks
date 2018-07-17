@@ -1,8 +1,8 @@
 package com.brandon3055.tolkientweaks.items;
 
 import codechicken.lib.model.ModelRegistryHelper;
-import com.brandon3055.brandonscore.config.Feature;
-import com.brandon3055.brandonscore.config.ICustomRender;
+import com.brandon3055.brandonscore.registry.Feature;
+import com.brandon3055.brandonscore.registry.IRenderOverride;
 import com.brandon3055.tolkientweaks.client.rendering.ItemRenderPalantir;
 import com.brandon3055.tolkientweaks.entity.EntityPalantir;
 import net.minecraft.entity.Entity;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 13/01/2015.
  */
-public class Palantir extends Item implements ICustomRender {
+public class Palantir extends Item implements IRenderOverride  {
 
 	public static float glow = 0;
 

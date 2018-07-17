@@ -1,10 +1,20 @@
 package com.brandon3055.tolkientweaks.client;
 
+import codechicken.lib.inventory.InventoryUtils;
+import com.brandon3055.brandonscore.handlers.HandHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
+import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
+import com.brandon3055.tolkientweaks.items.Coin;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,11 +30,35 @@ public class ClientEventHandler {
 
 	@SubscribeEvent
 	public void renderPlayerPre(RenderPlayerEvent.Pre event) {
-		if ((event.getEntityPlayer().getHeldItemMainhand() != null && event.getEntityPlayer().getHeldItemMainhand().getItem() == TTFeatures.ring) || (event.getEntityPlayer().getHeldItemOffhand() != null && event.getEntityPlayer().getHeldItemOffhand().getItem() == TTFeatures.ring)){
+		if (HandHelper.isHoldingItemEther(event.getEntityPlayer(), TTFeatures.ring)){
 			event.setCanceled(true);
 		}
 	}
 
+	@SubscribeEvent
+	public void renderPlayerPre(EntityItemPickupEvent event) {
+		EntityItem item = event.getItem();
+		ItemStack coins = item.getItem();
+
+		if (!coins.isEmpty() && coins.getItem() instanceof Coin && !item.isDead) {
+			EntityPlayer player = event.getEntityPlayer();
+
+			for (ItemStack stack : player.inventory.mainInventory) {
+				if (!stack.isEmpty() && stack.getItem() == TTFeatures.coinPouch) {
+					InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
+					int remainder = InventoryUtils.insertItem(inventory, coins, false);
+					coins.setCount(remainder);
+					if (coins.isEmpty()) {
+						item.setDead();
+						event.setResult(Event.Result.DENY);
+						player.world.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_ITEM_PICKUP, player.getSoundCategory(), 0.2F, ((player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+						player.world.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, player.getSoundCategory(), 0.2F, ((player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.7F + 1.0F));
+						return;
+					}
+				}
+			}
+		}
+	}
 
 	@SubscribeEvent
 	public void guiOpen(GuiOpenEvent event)
@@ -63,24 +97,25 @@ public class ClientEventHandler {
 			}
 		}
 
-		public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_)
+		@Override
+		public void drawScreen(int mouseX, int mouseY, float partialTicks)
 		{
 			this.drawDefaultBackground();
-			this.drawCenteredString(this.fontRendererObj, I18n.format("lanServer.title", new Object[0]), this.width / 2, 50, 16777215);
-			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane1.txt"), this.width / 2, 82, 16777215);
-			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane2.txt"), this.width / 2, 92, 16777215);
-			this.drawCenteredString(this.fontRendererObj, I18n.format("info.tt.guiLane3.txt"), this.width / 2, 102, 16777215);
+			this.drawCenteredString(this.fontRenderer, I18n.format("lanServer.title"), this.width / 2, 50, 16777215);
+			this.drawCenteredString(this.fontRenderer, I18n.format("info.tt.guiLane1.txt"), this.width / 2, 82, 16777215);
+			this.drawCenteredString(this.fontRenderer, I18n.format("info.tt.guiLane2.txt"), this.width / 2, 92, 16777215);
+			this.drawCenteredString(this.fontRenderer, I18n.format("info.tt.guiLane3.txt"), this.width / 2, 102, 16777215);
 
 			int k;
 
 			for (k = 0; k < this.buttonList.size(); ++k)
 			{
-				((GuiButton)this.buttonList.get(k)).drawButton(this.mc, p_73863_1_, p_73863_2_);
+				((GuiButton)this.buttonList.get(k)).drawButton(this.mc, mouseX, mouseY, partialTicks);
 			}
 
 			for (k = 0; k < this.labelList.size(); ++k)
 			{
-				((GuiLabel)this.labelList.get(k)).drawLabel(this.mc, p_73863_1_, p_73863_2_);
+				((GuiLabel)this.labelList.get(k)).drawLabel(this.mc, mouseX, mouseY);
 			}
 		}
 	}

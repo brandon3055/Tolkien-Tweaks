@@ -52,11 +52,11 @@ public class GuiHandler implements IGuiHandler {
             case ID_KEYCHAIN: {
                 ItemStack stack = player.getHeldItemMainhand();
                 EnumHand hand = EnumHand.MAIN_HAND;
-                if (stack == null || !(stack.getItem() instanceof KeyChain)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof KeyChain)) {
                     stack = player.getHeldItemOffhand();
                     hand = EnumHand.OFF_HAND;
                 }
-                if (stack == null || !(stack.getItem() instanceof KeyChain)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof KeyChain)) {
                     return null;
                 }
 
@@ -65,11 +65,11 @@ public class GuiHandler implements IGuiHandler {
             case ID_COIN_POUCH: {
                 ItemStack stack = player.getHeldItemMainhand();
                 EnumHand hand = EnumHand.MAIN_HAND;
-                if (stack == null || !(stack.getItem() instanceof CoinPouch)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof CoinPouch)) {
                     stack = player.getHeldItemOffhand();
                     hand = EnumHand.OFF_HAND;
                 }
-                if (stack == null || !(stack.getItem() instanceof CoinPouch)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof CoinPouch)) {
                     return null;
                 }
 
@@ -92,17 +92,17 @@ public class GuiHandler implements IGuiHandler {
             }
             case ID_LOCKABLE_CHEST: {
                 if (tile instanceof TileLockableChest) {
-                    return new GuiLockableChest(((TileLockableChest) tile).getInventory(player.getHeldItemMainhand()), player.inventory);
+                    return new GuiLockableChest((TileLockableChest) tile, ((TileLockableChest) tile).getInventory(player.getHeldItemMainhand()), player.inventory);
                 }
             }
             case ID_KEYCHAIN: {
                 ItemStack stack = player.getHeldItemMainhand();
                 EnumHand hand = EnumHand.MAIN_HAND;
-                if (stack == null || !(stack.getItem() instanceof KeyChain)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof KeyChain)) {
                     stack = player.getHeldItemOffhand();
                     hand = EnumHand.OFF_HAND;
                 }
-                if (stack == null || !(stack.getItem() instanceof KeyChain)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof KeyChain)) {
                     return null;
                 }
 
@@ -111,11 +111,11 @@ public class GuiHandler implements IGuiHandler {
             case ID_COIN_POUCH: {
                 ItemStack stack = player.getHeldItemMainhand();
                 EnumHand hand = EnumHand.MAIN_HAND;
-                if (stack == null || !(stack.getItem() instanceof CoinPouch)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof CoinPouch)) {
                     stack = player.getHeldItemOffhand();
                     hand = EnumHand.OFF_HAND;
                 }
-                if (stack == null || !(stack.getItem() instanceof CoinPouch)) {
+                if (stack.isEmpty() || !(stack.getItem() instanceof CoinPouch)) {
                     return null;
                 }
 

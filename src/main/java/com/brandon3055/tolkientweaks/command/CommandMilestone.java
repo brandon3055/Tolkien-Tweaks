@@ -16,12 +16,12 @@ import net.minecraft.world.World;
  */
 public class CommandMilestone extends CommandBase {
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "milestone";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender p_71518_1_) {
+    public String getUsage(ICommandSender sender) {
         return "/milestone [player]";
     }
 
@@ -40,7 +40,7 @@ public class CommandMilestone extends CommandBase {
 
         TTWorldData.MilestoneMarker marker = TTWorldData.getMap(sender.getEntityWorld()).get(sender.getName());
 
-        World world = server.worldServerForDimension(marker.dimension);
+        World world = server.getWorld(marker.dimension);
 
         if (world == null){
             throw new CommandException("Dimension %s not found!", marker.dimension);

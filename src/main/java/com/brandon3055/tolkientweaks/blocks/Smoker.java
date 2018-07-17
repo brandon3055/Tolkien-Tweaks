@@ -33,34 +33,24 @@ public class Smoker extends ChameleonBlock<TileSmoker> {
         return worldIn.isRemote ? new TileSmokerClient() : new TileSmoker();
     }
 
-    //
-//	@Override
-//	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int p_149673_5_) {
-//		TileSmoker tile = blockAccess.getTileEntity(x, y, z) instanceof TileSmoker ? (TileSmoker) blockAccess.getTileEntity(x, y, z) : null;
-//		if (tile != null)
-//		{
-//			return Block.getBlockById(tile.block).getIcon(blockAccess, x, y, z, p_149673_5_);
-//		}
-//		return super.getIcon(blockAccess, x, y, z, p_149673_5_);
-//	}
-
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (world.isRemote) {
             return true;
         }
 
         TileEntity tile = world.getTileEntity(pos);
 
-        if (tile instanceof TileSmoker && heldItem != null) {
+        ItemStack heldItem = player.getHeldItem(hand);
+        if (tile instanceof TileSmoker && !heldItem.isEmpty()) {
             for (int id : OreDictionary.getOreIDs(heldItem)) {
                 String oreName = OreDictionary.getOreName(id);
                 if (oreName.startsWith("dye") && oreName.length() > 3) {
                     for (EnumColour colour : EnumColour.values()) {
-                        if (oreName.equals(colour.getOreDictionaryName())) {
+                        if (oreName.equals(colour.getDyeOreName())) {
                             ((TileSmoker) tile).colour.value = (byte) colour.ordinal();
                             ((TileSmoker) tile).updateBlock();
-                            ((TileSmoker) tile).detectAndSendChanges();
+                            ((TileSmoker) tile).getDataManager().detectAndSendChanges();
                             return true;
                         }
                     }

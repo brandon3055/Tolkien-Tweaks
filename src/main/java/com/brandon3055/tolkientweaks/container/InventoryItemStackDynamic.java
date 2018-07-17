@@ -19,10 +19,9 @@ public class InventoryItemStackDynamic implements IInventory {
 
     private ItemStack stack;
     private int stackLimit;
-    private LinkedList<ItemStack> stacks = new LinkedList<ItemStack>();
+    private LinkedList<ItemStack> stacks = new LinkedList<>();
 
-    public InventoryItemStackDynamic(ItemStack stack, int stackLimit)
-    {
+    public InventoryItemStackDynamic(ItemStack stack, int stackLimit) {
         this.stack = stack;
         this.stackLimit = stackLimit;
         loadItems();
@@ -32,12 +31,12 @@ public class InventoryItemStackDynamic implements IInventory {
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        if (index < 0){
+        if (index < 0) {
             return;
         }
 
-        if (stack == null) {
-            if (index < stacks.size()){
+        if (stack.isEmpty()) {
+            if (index < stacks.size()) {
                 stacks.remove(index);
             }
         }
@@ -56,21 +55,25 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     @Override
+    public boolean isEmpty() {
+        return stacks.isEmpty();
+    }
+
+    @Override
     public ItemStack getStackInSlot(int index) {
-        return index >= 0 && index < stacks.size() ? stacks.get(index) : null;
+        return index >= 0 && index < stacks.size() ? stacks.get(index) : ItemStack.EMPTY;
     }
 
     public ItemStack decrStackSize(int index, int count) {
         ItemStack itemstack = getStackInSlot(index);
 
-        if (itemstack != null) {
-            if (itemstack.stackSize <= count) {
-                setInventorySlotContents(index, null);
-            } else {
-                itemstack = itemstack.splitStack(count);
-                if (itemstack.stackSize == 0) {
-                    setInventorySlotContents(index, null);
-                }
+        if (itemstack.isEmpty()) {
+            setInventorySlotContents(index, ItemStack.EMPTY);
+        }
+        else {
+            itemstack = itemstack.splitStack(count);
+            if (itemstack.isEmpty()) {
+                setInventorySlotContents(index, ItemStack.EMPTY);
             }
         }
         return itemstack;
@@ -80,8 +83,8 @@ public class InventoryItemStackDynamic implements IInventory {
     public ItemStack removeStackFromSlot(int index) {
         ItemStack item = getStackInSlot(index);
 
-        if (item != null) {
-            setInventorySlotContents(index, null);
+        if (!item.isEmpty()) {
+            setInventorySlotContents(index, ItemStack.EMPTY);
         }
 
         return item;
@@ -90,20 +93,17 @@ public class InventoryItemStackDynamic implements IInventory {
     //endregion
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return stack.getDisplayName();
     }
 
     @Override
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return false;
     }
 
     @Override
-    public ITextComponent getDisplayName()
-    {
+    public ITextComponent getDisplayName() {
         return new TextComponentString(stack.getDisplayName());
     }
 
@@ -113,7 +113,7 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(EntityPlayer player) {
         return true;
     }
 
@@ -133,30 +133,26 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     @Override
-    public void markDirty()
-    {
+    public void markDirty() {
         saveItems();
     }
 
     @Override
-    public int getField(int id)
-    {
+    public int getField(int id) {
         return 0;
     }
 
     @Override
-    public void setField(int id, int value)
-    {
+    public void setField(int id, int value) {
     }
 
     @Override
-    public int getFieldCount()
-    {
+    public int getFieldCount() {
         return 0;
     }
 
     public void saveItems() {
-        if (stack == null) {
+        if (stack.isEmpty()) {
             LogHelperBC.bigError("TolkienTweaks: Tried to load Dynamic Item Stack inventory from null item!");
             return;
         }
@@ -165,7 +161,7 @@ public class InventoryItemStackDynamic implements IInventory {
         NBTTagList list = new NBTTagList();
 
         for (ItemStack stack : stacks) {
-            if (stack != null && stack.stackSize > 0) {
+            if (!stack.isEmpty()) {
                 NBTTagCompound tag = new NBTTagCompound();
                 stack.writeToNBT(tag);
                 list.appendTag(tag);
@@ -176,7 +172,7 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     public void loadItems() {
-        if (stack == null) {
+        if (stack.isEmpty()) {
             LogHelperBC.bigError("TolkienTweaks: Tried to save Dynamic Item Stack inventory to null item!");
             return;
         }
@@ -186,13 +182,12 @@ public class InventoryItemStackDynamic implements IInventory {
         stacks.clear();
 
         for (int i = 0; i < list.tagCount(); i++) {
-            stacks.add(ItemStack.loadItemStackFromNBT(list.getCompoundTagAt(i)));
+            stacks.add(new ItemStack(list.getCompoundTagAt(i)));
         }
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         stacks.clear();
         saveItems();
     }

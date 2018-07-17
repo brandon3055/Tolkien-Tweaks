@@ -3,9 +3,10 @@ package com.brandon3055.tolkientweaks.blocks;
 import codechicken.lib.block.property.unlisted.UnlistedBooleanProperty;
 import codechicken.lib.model.ModelRegistryHelper;
 import com.brandon3055.brandonscore.blocks.BlockBCore;
-import com.brandon3055.brandonscore.config.Feature;
-import com.brandon3055.brandonscore.config.ICustomRender;
+import com.brandon3055.brandonscore.registry.Feature;
+import com.brandon3055.brandonscore.registry.IRenderOverride;
 import com.brandon3055.tolkientweaks.client.UnlistedStateProperty;
+import com.brandon3055.tolkientweaks.client.rendering.CustomBlockItemRenderer;
 import com.brandon3055.tolkientweaks.client.rendering.model.ModelChameleon;
 import com.brandon3055.tolkientweaks.tileentity.IChameleonStateProvider;
 import net.minecraft.block.ITileEntityProvider;
@@ -17,6 +18,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -37,7 +39,7 @@ import java.util.List;
  * Created by brandon3055 on 28/10/2016.
  *
  */
-public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvider> extends BlockBCore implements ICustomRender, ITileEntityProvider {
+public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvider> extends BlockBCore implements IRenderOverride, ITileEntityProvider {
 
     public static final UnlistedStateProperty TARGET_BLOCK_STATE = new UnlistedStateProperty("target_state");//Contains the state of the block who's model this block is trying to emulate
     public static final UnlistedBooleanProperty DISABLE_CAMO = new UnlistedBooleanProperty("disable_camo");
@@ -139,12 +141,14 @@ public abstract class ChameleonBlock<T extends TileEntity & IChameleonStateProvi
     public void registerRenderer(Feature feature) {
         StateMap deviceStateMap = new StateMap.Builder().ignore(FULL_CUBE).build();
         ModelLoader.setCustomStateMapper(this, deviceStateMap);
-        ModelRegistryHelper.register(new ModelResourceLocation(getRegistryName(), "normal"), new ModelChameleon());
+        ModelRegistryHelper.register(new ModelResourceLocation(feature.getRegistryName(), "normal"), new ModelChameleon());
+
+        ModelRegistryHelper.registerItemRenderer(Item.getItemFromBlock(this), new CustomBlockItemRenderer(this));
     }
 
     @Override
     public boolean registerNormal(Feature feature) {
-        return true;
+        return false;
     }
 
     //endregion

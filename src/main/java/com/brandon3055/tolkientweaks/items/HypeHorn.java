@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 public class HypeHorn extends Item {
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World world, EntityPlayer player, EnumHand hand) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		world.playSound(player.posX, player.posY, player.posZ, TTSounds.hypeHorn, SoundCategory.PLAYERS, 5F, 0.95F + world.rand.nextFloat() * 0.1F, true);
-		return super.onItemRightClick(itemStackIn, world, player, hand);
+		return super.onItemRightClick(world, player, hand);
 	}
 }

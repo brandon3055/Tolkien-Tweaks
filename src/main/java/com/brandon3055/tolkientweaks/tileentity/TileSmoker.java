@@ -1,6 +1,6 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
-import com.brandon3055.brandonscore.network.wrappers.SyncableByte;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedByte;
 import com.brandon3055.tolkientweaks.TTFeatures;
 
 /**
@@ -8,10 +8,9 @@ import com.brandon3055.tolkientweaks.TTFeatures;
  */
 public class TileSmoker extends TileChameleon {
 
-	public final SyncableByte colour = new SyncableByte((byte) 0, true, false, true);
+	public final ManagedByte colour = register("colour", new ManagedByte((byte) 0)).syncViaTile().trigerUpdate().saveToTile().finish();
 
 	public TileSmoker() {
 		super(TTFeatures.smoker);
-		registerSyncableObject(colour, true);
 	}
 }

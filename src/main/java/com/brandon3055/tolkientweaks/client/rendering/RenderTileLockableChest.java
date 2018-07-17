@@ -19,7 +19,7 @@ public class RenderTileLockableChest extends TileEntitySpecialRenderer<TileLocka
     private static final ResourceLocation TEXTURE_CHRISTMAS_DOUBLE = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
     private static final ResourceLocation TEXTURE_NORMAL_DOUBLE = new ResourceLocation("tolkientweaks:textures/model/lockable_double_chest.png");
     private static final ResourceLocation TEXTURE_CHRISTMAS = new ResourceLocation("textures/entity/chest/christmas.png");
-    private static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
+    public static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("tolkientweaks:textures/model/lockable_chest.png");
     private final ModelChest simpleChest = new ModelChest();
     private final ModelChest largeChest = new ModelLargeChest();
     private boolean isChristmas;
@@ -28,21 +28,20 @@ public class RenderTileLockableChest extends TileEntitySpecialRenderer<TileLocka
     {
         Calendar calendar = Calendar.getInstance();
 
-        if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26)
+        if (calendar.get(Calendar.MONTH) + 1 == 12 && calendar.get(Calendar.DAY_OF_MONTH) >= 24 && calendar.get(Calendar.DAY_OF_MONTH) <= 26)
         {
             this.isChristmas = true;
         }
     }
 
     @Override
-    public void renderTileEntityAt(TileLockableChest te, double x, double y, double z, float partialTicks, int destroyStage)
-    {
+    public void render(TileLockableChest te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GlStateManager.enableDepth();
         GlStateManager.depthFunc(515);
         GlStateManager.depthMask(true);
         int i;
 
-        if (te.hasWorldObj())
+        if (te.hasWorld())
         {
             Block block = te.getBlockType();
             i = te.getBlockMetadata();

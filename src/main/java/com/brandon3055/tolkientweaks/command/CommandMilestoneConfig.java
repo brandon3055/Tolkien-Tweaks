@@ -16,13 +16,14 @@ import net.minecraft.util.text.TextFormatting;
  * Created by brandon3055 on 3/06/2016.
  */
 public class CommandMilestoneConfig extends CommandBase {
+
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "milestone-config";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender p_71518_1_) {
+    public String getUsage(ICommandSender sender) {
         return "/milestone-config";
     }
 
@@ -61,14 +62,12 @@ public class CommandMilestoneConfig extends CommandBase {
 
         if (args[0].equals("name")){
             tile.markerName.value = args[1];
-            sender.addChatMessage(new TextComponentString("Name set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
-//            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            sender.sendMessage(new TextComponentString("Name set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
             tile.updateBlock();
         }
         else if (args[0].equals("cooldown")){
             tile.coolDown = Integer.parseInt(args[1]) * 20;
-            sender.addChatMessage(new TextComponentString("Cool Down set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
-//            tile.getWorldObj().markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
+            sender.sendMessage(new TextComponentString("Cool Down set!").setStyle(new Style().setColor(TextFormatting.GREEN)));
             tile.updateBlock();
         }
         else {
@@ -77,8 +76,8 @@ public class CommandMilestoneConfig extends CommandBase {
     }
 
     private void help(ICommandSender sender){
-        sender.addChatMessage(new TextComponentString("/milestone"));
-        sender.addChatMessage(new TextComponentString("/milestone name [Name]"));
-        sender.addChatMessage(new TextComponentString("/milestone cooldown [seconds]"));
+        sender.sendMessage(new TextComponentString("/milestone"));
+        sender.sendMessage(new TextComponentString("/milestone name [Name]"));
+        sender.sendMessage(new TextComponentString("/milestone cooldown [seconds]"));
     }
 }

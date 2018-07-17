@@ -1,7 +1,7 @@
 package com.brandon3055.tolkientweaks.blocks;
 
 
-import codechicken.lib.model.bakery.PlanarFaceBakery;
+import codechicken.lib.model.PlanarFaceBakery;
 import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.tileentity.TileKeyStone;
 import com.google.common.collect.ImmutableList;
@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -46,37 +45,22 @@ public class CamoKeystone extends ChameleonBlock<TileKeyStone> {
 
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileKeyStone) {
-            if (player.capabilities.isCreativeMode && ((TileKeyStone) tile).attemptSetFromStack(heldItem)) {
+            if (player.capabilities.isCreativeMode && ((TileKeyStone) tile).attemptSetFromStack(player.getHeldItem(hand))) {
                 return true;
             }
             else {
-                return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
+                return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
             }
         }
         return false;
     }
 
-
-//    @Override
-//    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
-//        TileKeyStone tile = world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileKeyStone ? (TileKeyStone) world.getTileEntity(x, y, z) : null;
-//        if (tile != null) {
-//            ItemStack key = new ItemStack(ModItems.key);
-//            ItemNBTHelper.setInteger(key, "KeyCode", tile.getKeyCode());
-//            ItemNBTHelper.setInteger(key, "X", x);
-//            ItemNBTHelper.setInteger(key, "Y", y);
-//            ItemNBTHelper.setInteger(key, "Z", z);
-//            return key;
-//        }
-//        return null;
-//    }
-
     @Override
-    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
+    public boolean isTopSolid(IBlockState state) {
         return true;
     }
 

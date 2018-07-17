@@ -1,12 +1,16 @@
 package com.brandon3055.tolkientweaks.blocks;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -21,11 +25,13 @@ public class CKeyStoneItemBlock extends ItemBlock {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void getSubItems(Item item, CreativeTabs p_150895_2_, List list) {
-		list.add(new ItemStack(item, 1, 0));
-		list.add(new ItemStack(item, 1, 1));
-		list.add(new ItemStack(item, 1, 2));
-		list.add(new ItemStack(item, 1, 3));
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		if (isInCreativeTab(tab)) {
+			items.add(new ItemStack(this, 1, 0));
+			items.add(new ItemStack(this, 1, 1));
+			items.add(new ItemStack(this, 1, 2));
+			items.add(new ItemStack(this, 1, 3));
+		}
 	}
 
 	@Override
@@ -33,8 +39,9 @@ public class CKeyStoneItemBlock extends ItemBlock {
 		return par1;
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer p_77624_2_, List list, boolean p_77624_4_) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> list, ITooltipFlag flagIn) {
 		int meta = stack.getItemDamage();
 		switch (meta){
 			case 0:

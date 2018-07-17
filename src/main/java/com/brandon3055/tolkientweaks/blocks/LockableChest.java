@@ -2,8 +2,8 @@ package com.brandon3055.tolkientweaks.blocks;
 
 import codechicken.lib.model.ModelRegistryHelper;
 import com.brandon3055.brandonscore.blocks.BlockBCore;
-import com.brandon3055.brandonscore.config.Feature;
-import com.brandon3055.brandonscore.config.ICustomRender;
+import com.brandon3055.brandonscore.registry.Feature;
+import com.brandon3055.brandonscore.registry.IRenderOverride;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.client.gui.GuiHandler;
 import com.brandon3055.tolkientweaks.client.rendering.ItemLockableChestRenderer;
@@ -37,12 +37,10 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
-
 /**
  * Created by brandon3055 on 16/04/2017.
  */
-public class LockableChest extends BlockBCore implements ITileEntityProvider, ICustomRender {
+public class LockableChest extends BlockBCore implements ITileEntityProvider, IRenderOverride {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     protected static final AxisAlignedBB NORTH_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D, 0.9375D);
@@ -100,15 +98,14 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
     }
 
     @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing());
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor_double((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
+        EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
         state = state.withProperty(FACING, enumfacing);
         BlockPos blockpos = pos.north();
         BlockPos blockpos1 = pos.south();
@@ -380,10 +377,9 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
-    {
-        super.neighborChanged(state, worldIn, pos, blockIn);
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        super.neighborChanged(state, world, pos, blockIn, fromPos);
+        TileEntity tileentity = world.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityChest)
         {
@@ -406,7 +402,7 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -431,58 +427,6 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
         }
     }
 
-//    @Nullable
-//    public IInventory getContainer(World p_189418_1_, BlockPos p_189418_2_)
-//    {
-//        TileEntity tileentity = p_189418_1_.getTileEntity(p_189418_2_);
-//
-//        if (!(tileentity instanceof TileLockableChest))
-//        {
-//            return null;
-//        }
-//        else
-//        {
-//            IInventory ilockablecontainer = (TileLockableChest)tileentity;
-//
-//            if (this.isBlocked(p_189418_1_, p_189418_2_))
-//            {
-//                return null;
-//            }
-//            else
-//            {
-//                for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-//                {
-//                    BlockPos blockpos = p_189418_2_.offset(enumfacing);
-//                    Block block = p_189418_1_.getBlockState(blockpos).getBlock();
-//
-//                    if (block == this)
-//                    {
-//                        if (this.isBlocked(p_189418_1_, blockpos))
-//                        {
-//                            return null;
-//                        }
-//
-//                        TileEntity tileentity1 = p_189418_1_.getTileEntity(blockpos);
-//
-//                        if (tileentity1 instanceof TileLockableChest)
-//                        {
-//                            if (enumfacing != EnumFacing.WEST && enumfacing != EnumFacing.NORTH)
-//                            {
-//                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", ilockablecontainer, (TileLockableChest)tileentity1);
-//                            }
-//                            else
-//                            {
-//                                ilockablecontainer = new InventoryLockableChest("container.chestDouble", (TileLockableChest)tileentity1, ilockablecontainer);
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                return ilockablecontainer;
-//            }
-//        }
-//    }
-
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
@@ -506,7 +450,7 @@ public class LockableChest extends BlockBCore implements ITileEntityProvider, IC
                 i = ((TileEntityChest)tileentity).numPlayersUsing;
             }
 
-            return MathHelper.clamp_int(i, 0, 15);
+            return MathHelper.clamp(i, 0, 15);
         }
     }
 

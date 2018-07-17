@@ -3,7 +3,7 @@ package com.brandon3055.tolkientweaks.utils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.WorldSavedData;
 
 import java.util.HashMap;
 import java.util.Map;

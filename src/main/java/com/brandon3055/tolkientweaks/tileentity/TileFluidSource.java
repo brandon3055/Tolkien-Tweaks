@@ -15,8 +15,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
-import javax.annotation.Nullable;
-
 /**
  * Created by brandon3055 on 28/10/2016.
  */
@@ -27,16 +25,18 @@ public class TileFluidSource extends TileBCBase implements IActivatableTile, ICh
     public TileFluidSource() {
     }
 
+
     @Override
-    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (!player.isCreative() || stack == null || !(stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))) {
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        ItemStack stack = player.getHeldItem(hand);
+        if (!player.isCreative() || stack.isEmpty() || !(stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null))) {
             return false;
         }
 
         try {
-            IFluidTankProperties props = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null).getTankProperties()[0];
+            IFluidTankProperties props = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null).getTankProperties()[0];
             fluidStack = props.getContents();
-            onNeighborChange();
+            onNeighborChange(pos);
             return true;
         }
 
@@ -66,16 +66,16 @@ public class TileFluidSource extends TileBCBase implements IActivatableTile, ICh
     }
 
     @Override
-    public void onNeighborChange() {
+    public void onNeighborChange(BlockPos neighbor) {
         if (fluidStack == null || fluidStack.getFluid().getBlock() == null) {
             return;
         }
         Block block = fluidStack.getFluid().getBlock();
         for (EnumFacing facing : EnumFacing.values()) {
             BlockPos side = pos.offset(facing);
-            if (worldObj.isAirBlock(side)) {
-                worldObj.setBlockState(side, block.getDefaultState());
-                worldObj.notifyBlockOfStateChange(side, block);
+            if (world.isAirBlock(side)) {
+                world.setBlockState(side, block.getDefaultState());
+                world.neighborChanged(side, block, pos);
             }
         }
     }

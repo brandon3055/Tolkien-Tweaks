@@ -2,11 +2,10 @@ package com.brandon3055.tolkientweaks.client.rendering;
 
 import codechicken.lib.texture.TextureUtils;
 import com.brandon3055.brandonscore.client.ResourceHelperBC;
-import com.brandon3055.brandonscore.lib.Vec3D;
 import com.brandon3055.tolkientweaks.tileentity.TileCamoChest;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -26,8 +25,9 @@ public class RenderTileCamoChest extends TileEntitySpecialRenderer<TileCamoChest
         chest = new TileEntityChest();
     }
 
+
     @Override
-    public void renderTileEntityAt(TileCamoChest te, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void render(TileCamoChest te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
@@ -36,7 +36,7 @@ public class RenderTileCamoChest extends TileEntitySpecialRenderer<TileCamoChest
         double maxy = 0.875;
         double tminy = 1 - 0.875;
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.getBuffer();
 
         GlStateManager.disableLighting();
 
@@ -126,51 +126,4 @@ public class RenderTileCamoChest extends TileEntitySpecialRenderer<TileCamoChest
 
         GlStateManager.popMatrix();
     }
-
-    private void putQuad(VertexBuffer buffer, Vec3D p1, Vec3D p2, Vec3D p3, Vec3D p4, double uMin, double uMax, double vMin, double vMax) {
-//        buffer.pos(p1.x, p1.y, p1.z).tex()
-    }
-
-
-    //	@Override
-//	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-//
-//		GL11.glPushMatrix();
-//		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-//		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-//		GL11.glDepthMask(true);
-//		TileEntityRendererDispatcher.instance.renderTileEntityAt(chest, 0.0D, 0.0D, 0.0D, 0.0F);
-//		GL11.glPopAttrib();
-//		GL11.glPopMatrix();
-//	}
-//
-//	@Override
-//	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-//		if(ClientProxy.renderPass == 0)
-//		{
-//			renderer.renderAllFaces = true;
-//			TileCamoChest tile = world.getTileEntity(x, y, z) instanceof TileCamoChest ? (TileCamoChest) world.getTileEntity(x, y, z) : null;
-//			if (tile != null && tile.block != 0)
-//			{
-//				renderer.renderStandardBlock(Block.getBlockById(tile.block), x, y, z);
-//			}
-//			else renderer.renderStandardBlock(Blocks.planks, x, y, z);
-//			renderer.renderAllFaces = false;
-//		}
-//		else
-//		{
-//			renderer.renderStandardBlock(ModBlocks.camoChest, x, y, z);
-//		}
-//		return true;
-//	}
-//
-//	@Override
-//	public boolean shouldRender3DInInventory(int modelId) {
-//		return true;
-//	}
-//
-//	@Override
-//	public int getRenderId() {
-//		return TolkienTweaks.proxy.getCammoChestRenderpass();
-//	}
 }

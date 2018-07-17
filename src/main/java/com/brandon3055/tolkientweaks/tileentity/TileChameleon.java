@@ -1,10 +1,10 @@
 package com.brandon3055.tolkientweaks.tileentity;
 
+import codechicken.lib.data.MCDataInput;
 import com.brandon3055.brandonscore.blocks.TileBCBase;
 import com.brandon3055.brandonscore.client.ResourceHelperBC;
-import com.brandon3055.brandonscore.network.PacketTileMessage;
-import com.brandon3055.brandonscore.network.wrappers.SyncableByte;
-import com.brandon3055.brandonscore.network.wrappers.SyncableString;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedByte;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedString;
 import com.brandon3055.tolkientweaks.blocks.ChameleonBlock;
 import com.brandon3055.tolkientweaks.utils.LogHelper;
 import net.minecraft.block.Block;
@@ -12,7 +12,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -20,16 +19,14 @@ import net.minecraft.util.ResourceLocation;
  */
 public class TileChameleon extends TileBCBase implements IChameleonStateProvider {
 
-    private final SyncableString blockName = new SyncableString("minecraft:stone", true, false, false);
-    private final SyncableByte blockMeta = new SyncableByte((byte) 0, true, false, false);
+    private final ManagedString blockName = register("block_name", new ManagedString("minecraft:stone")).syncViaTile().saveToTile().finish();
+    private final ManagedByte blockMeta = register("block_meta", new ManagedByte((byte) 0)).syncViaTile().saveToTile().finish();
     private ChameleonBlock thisBlock;
     private IBlockState chameleonState = null;
     private boolean usingFallbackState = true;
 
     public TileChameleon(ChameleonBlock thisBlock) {
         this.thisBlock = thisBlock;
-        registerSyncableObject(blockName, true);
-        registerSyncableObject(blockMeta, true);
         setShouldRefreshOnBlockChange();
     }
 
@@ -66,21 +63,19 @@ public class TileChameleon extends TileBCBase implements IChameleonStateProvider
         }
 
         blockMeta.value = (byte) chameleonState.getBlock().getMetaFromState(chameleonState);
-        thisBlock.setNewChameleonState(worldObj, pos, worldObj.getBlockState(pos), chameleonState);
-        detectAndSendChanges();
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setByte("Meta", blockMeta.value);
-        compound.setString("Name", blockName.value);
-        if (!worldObj.isRemote) {
-            sendPacketToClients(new PacketTileMessage(this, (byte) 0, compound, false), syncRange());
+        thisBlock.setNewChameleonState(world, pos, world.getBlockState(pos), chameleonState);
+        dataManager.detectAndSendChanges();
+
+        if (!world.isRemote) {
+            sendPacketToClient(mcDataOutput -> mcDataOutput.writeByte(blockMeta.value).writeString(blockName.value), 0).sendToChunk(this);
         }
     }
 
     @Override
-    public void receivePacketFromServer(PacketTileMessage packet) {
-        if (packet.isNBT()) {
-            blockMeta.value = packet.compound.getByte("Meta");
-            blockName.value = packet.compound.getString("Name");
+    public void receivePacketFromServer(MCDataInput data, int id) {
+        if (id == 0) {
+            blockMeta.value = data.readByte();
+            blockName.value = data.readString();
             updateBlock();
         }
     }

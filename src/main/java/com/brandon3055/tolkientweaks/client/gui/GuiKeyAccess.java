@@ -1,12 +1,11 @@
 package com.brandon3055.tolkientweaks.client.gui;
 
-import com.brandon3055.brandonscore.client.gui.modulargui.MGuiElementBase;
-import com.brandon3055.brandonscore.client.gui.modulargui.ModularGuiScreen;
-import com.brandon3055.brandonscore.client.gui.modulargui.lib.EnumAlignment;
-import com.brandon3055.brandonscore.client.gui.modulargui.lib.IMGuiListener;
-import com.brandon3055.brandonscore.client.gui.modulargui.lib.ModuleBuilder.RawColumns;
-import com.brandon3055.brandonscore.client.gui.modulargui.modularelements.*;
-import com.brandon3055.brandonscore.network.PacketTileMessage;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.MGuiElementBase;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.ModularGuiScreen;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.lib.EnumAlignment;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.lib.IMGuiListener;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.lib.ModuleBuilder;
+import com.brandon3055.brandonscore.client.gui.modulargui_old.modularelements.*;
 import com.brandon3055.tolkientweaks.TTFeatures;
 import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.items.Key;
@@ -49,11 +48,11 @@ public class GuiKeyAccess extends ModularGuiScreen implements IMGuiListener {
         //region Key
         if (keymode) {
             MGuiLabel label = (MGuiLabel)manager.add(new MGuiLabel(this, guiLeft(), guiTop() + 5, xSize, 30, "Set the code for this key. The code can be anything as long as it matches the keystone.").setWrap(true).setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
-            keyCodeField = (MGuiTextField)manager.add(new MGuiTextField(this, guiLeft() + 5, label.yPos + label.ySize, xSize - 10, 14, fontRendererObj));
+            keyCodeField = (MGuiTextField)manager.add(new MGuiTextField(this, guiLeft() + 5, label.yPos + label.ySize, xSize - 10, 14, fontRenderer));
             keyCodeField.setMaxStringLength(1024);
 
             ItemStack stack = player.getHeldItemMainhand();
-            if (stack == null || stack.getItem() != TTFeatures.key) {
+            if (stack.isEmpty() || stack.getItem() != TTFeatures.key) {
                 return;
             }
 
@@ -64,7 +63,7 @@ public class GuiKeyAccess extends ModularGuiScreen implements IMGuiListener {
         }
         //endregion
         else {
-            RawColumns builder = new RawColumns(guiLeft() + 5, guiTop() + 5, 1, 14, 1);
+            ModuleBuilder.RawColumns builder = new ModuleBuilder.RawColumns(guiLeft() + 5, guiTop() + 5, 1, 14, 1);
 
             if (lockable.hasCK()) {
                 builder.add(consumeKey = new MGuiButtonToggle(this, 0, 0, xSize - 10, 14, "Toggle Consume Key") {
@@ -86,13 +85,13 @@ public class GuiKeyAccess extends ModularGuiScreen implements IMGuiListener {
             }
 
             builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Key Code Field").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
-            builder.add(keyCodeField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRendererObj));
+            builder.add(keyCodeField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRenderer));
             keyCodeField.setMaxStringLength(1024).setListener(this);
             keyCodeField.setText(lockable.getCode());
 
             if (lockable.hasDelay()) {
                 builder.add(new MGuiLabel(this, 0, 0, xSize - 10, 14, "Delay Field").setAlignment(EnumAlignment.LEFT).setTextColour(0xFF000000).setShadow(false));
-                builder.add(dellayField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRendererObj));
+                builder.add(dellayField = new MGuiTextField(this, 0, 0, xSize - 10, 14, fontRenderer));
                 dellayField.addChild(new MGuiHoverPopup(this, new String[]{"For button mode, Set how long in ticks the button stays pressed"}, dellayField));
                 dellayField.setText(lockable.getDelay() + "");
                 dellayField.setMaxStringLength(10).setListener(this);
@@ -113,22 +112,22 @@ public class GuiKeyAccess extends ModularGuiScreen implements IMGuiListener {
         }
         else if (!keymode) {
             if (eventElement == consumeKey) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 0, false, false));
+                lockable.getTile().sendPacketToServer(mcDataOutput -> {}, 0);
             }
             else if (eventElement == toggleMode) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 1, false, false));
+                lockable.getTile().sendPacketToServer(mcDataOutput -> {}, 1);
             }
             else if (eventElement == permanent) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 2, false, false));
+                lockable.getTile().sendPacketToServer(mcDataOutput -> {}, 2);
             }
             else if (eventElement == reset) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 3, false, false));
+                lockable.getTile().sendPacketToServer(mcDataOutput -> {}, 3);
             }
             else if (eventElement == keyCodeField) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 4, keyCodeField.getText(), false));
+                lockable.getTile().sendPacketToServer(out -> out.writeString(keyCodeField.getText()), 4);
             }
             else if (eventElement == dellayField) {
-                lockable.getTile().sendPacketToServer(new PacketTileMessage(lockable.getTile(), (byte) 5, dellayField.getText(), false));
+                lockable.getTile().sendPacketToServer(out -> out.writeString(dellayField.getText()), 5);
             }
         }
     }

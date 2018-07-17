@@ -1,17 +1,13 @@
 buildscript {
     repositories {
         jcenter()
-//        maven {
-//            name = "covers1624"
-//            url = "http://maven.covers1624.net/"
-//        }
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -20,16 +16,16 @@ apply plugin: 'maven-publish'
 
 repositories {
     maven {
-        name 'Covers1624 maven'
-        url "http://adel.podgeweb.com:1616/maven/"
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
     }
     maven {
-        name 'Covers1624 maven'
-        url "http://172.17.5.4:1616/maven/"
-    }
-    maven {
-        name 'CB Maven'
+        name 'CB Maven FS'
         url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name "JEI Maven."
+        url "http://dvs1.progwml6.com/files/maven"
     }
 }
 
@@ -47,8 +43,8 @@ version = "${config.mcversion}-${config.mod_version}"
 group = "com.brandon3055.tolkientweaks"
 archivesBaseName = "TolkienTweaks"
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 minecraft {
     version = config.mcversion + "-" + config.forge_version

@@ -1,7 +1,7 @@
 package com.brandon3055.tolkientweaks.blocks;
 
 
-import codechicken.lib.model.bakery.PlanarFaceBakery;
+import codechicken.lib.model.PlanarFaceBakery;
 import com.brandon3055.tolkientweaks.client.rendering.TTTextureCache;
 import com.brandon3055.tolkientweaks.tileentity.TileCamoGlowstone;
 import com.google.common.collect.ImmutableList;
@@ -52,11 +52,11 @@ public class CamoGlowstone extends ChameleonBlock<TileCamoGlowstone> {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileCamoGlowstone) {
-            if (player.capabilities.isCreativeMode && ((TileCamoGlowstone) tile).attemptSetFromStack(heldItem)) {
+            if (player.capabilities.isCreativeMode && ((TileCamoGlowstone) tile).attemptSetFromStack(player.getHeldItem(hand))) {
                 return true;
             }
         }
@@ -74,7 +74,7 @@ public class CamoGlowstone extends ChameleonBlock<TileCamoGlowstone> {
 
     public int quantityDroppedWithBonus(int fortune, Random random)
     {
-        return MathHelper.clamp_int(this.quantityDropped(random) + random.nextInt(fortune + 1), 1, 4);
+        return MathHelper.clamp(this.quantityDropped(random) + random.nextInt(fortune + 1), 1, 4);
     }
 
     public int quantityDropped(Random random)

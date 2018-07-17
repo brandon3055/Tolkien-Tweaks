@@ -18,8 +18,9 @@ public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
     public final InventoryLockableChest lockableInventory;
     private final int numRows;
 
-    public ContainerLockableChest(IInventory playerInventory, InventoryLockableChest chestInventory, EntityPlayer player)
+    public ContainerLockableChest(TileLockableChest tile, IInventory playerInventory, InventoryLockableChest chestInventory, EntityPlayer player)
     {
+        super(player, tile);
         this.lockableInventory = chestInventory;
         this.numRows = chestInventory.getSizeInventory() / 9;
         chestInventory.openInventory(player);
@@ -49,13 +50,13 @@ public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.lockableInventory.isUseableByPlayer(playerIn);
+        return this.lockableInventory.isUsableByPlayer(playerIn);
     }
 
     @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -67,17 +68,17 @@ public class ContainerLockableChest extends ContainerBCBase<TileLockableChest> {
             {
                 if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
                 {
-                    return null;
+                    return ItemStack.EMPTY;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
             {
-                return null;
+                return ItemStack.EMPTY;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.isEmpty())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.EMPTY);
             }
             else
             {

@@ -1,5 +1,6 @@
 package com.brandon3055.tolkientweaks.container;
 
+import codechicken.lib.util.ArrayUtils;
 import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.tileentity.TileLockableChest;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,82 +17,61 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     public TileLockableChest tile;
     private ItemStack key;
     private ItemStack[] items = new ItemStack[getSizeInventory()];
-//    private final IInventory upperChest;
-//    private final IInventory lowerChest;
 
-    public InventoryLockableChest(TileLockableChest tile, ItemStack key)
-    {
+    public InventoryLockableChest(TileLockableChest tile, ItemStack key) {
+        ArrayUtils.fill(items, ItemStack.EMPTY);
         this.tile = tile;
         this.key = key;
-//
-//        if (upperChestIn == null)
-//        {
-//            upperChestIn = lowerChestIn;
-//        }
-//
-//        if (lowerChestIn == null)
-//        {
-//            lowerChestIn = upperChestIn;
-//        }
-//
-//        this.upperChest = upperChestIn;
-//        this.lowerChest = lowerChestIn;
         loadItems();
     }
 
     @Override
-    public int getSizeInventory()
-    {
+    public int getSizeInventory() {
         return 54;
     }
-//
-//    public boolean isPartOfLargeChest(IInventory inventoryIn)
-//    {
-//        return this.upperChest == inventoryIn || this.lowerChest == inventoryIn;
-//    }
 
     @Override
-    public String getName()
-    {
+    public boolean isEmpty() {
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) return true;
+        }
+        return true;
+    }
+
+    @Override
+    public String getName() {
         return tile.getName();
     }
 
     @Override
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return false;
     }
 
     @Override
-    public ITextComponent getDisplayName()
-    {
-//        if (tile.getAdjacentChest() != null) {
-//            return new TextComponentString("Locked Chest");
-//        }
-//        else {
-            return new TextComponentString("Locked Chest");
-//        }
+    public ITextComponent getDisplayName() {
+        return new TextComponentString("Locked Chest");
     }
 
     @Override
     public ItemStack getStackInSlot(int index) {
-        return index < items.length && index >= 0 ? items[index] : null;
+        return index < items.length && index >= 0 ? items[index] : ItemStack.EMPTY;
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
         ItemStack itemstack = getStackInSlot(index);
 
-        if (itemstack != null) {
-            if (itemstack.stackSize <= count) {
-                setInventorySlotContents(index, null);
-            } else {
-                itemstack = itemstack.splitStack(count);
-                if (itemstack.stackSize == 0) {
-                    setInventorySlotContents(index, null);
-                }
+        if (itemstack.isEmpty()) {
+            setInventorySlotContents(index, ItemStack.EMPTY);
+        }
+        else {
+            itemstack = itemstack.splitStack(count);
+            if (itemstack.isEmpty()) {
+                setInventorySlotContents(index, ItemStack.EMPTY);
             }
         }
+
         return itemstack;
     }
 
@@ -99,8 +79,8 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     public ItemStack removeStackFromSlot(int index) {
         ItemStack item = getStackInSlot(index);
 
-        if (item != null) {
-            setInventorySlotContents(index, null);
+        if (!item.isEmpty()) {
+            setInventorySlotContents(index, ItemStack.EMPTY);
         }
 
         return item;
@@ -108,14 +88,14 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        if (index < 0 || index >= items.length){
+        if (index < 0 || index >= items.length) {
             return;
         }
 
         items[index] = stack;
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-            stack.stackSize = getInventoryStackLimit();
+        if (!stack.isEmpty() && stack.getCount() > getInventoryStackLimit()) {
+            stack.setCount(getInventoryStackLimit());
         }
         markDirty();
     }
@@ -126,7 +106,7 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(EntityPlayer player) {
         return true;
     }
 
@@ -156,42 +136,27 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     }
 
     @Override
-    public void markDirty()
-    {
+    public void markDirty() {
         saveItems();
     }
 
     @Override
-    public int getField(int id)
-    {
+    public int getField(int id) {
         return 0;
     }
 
     @Override
-    public void setField(int id, int value)
-    {
+    public void setField(int id, int value) {
     }
 
     @Override
-    public int getFieldCount()
-    {
+    public int getFieldCount() {
         return 0;
     }
 
     public boolean isDouble() {
         return tile.getAdjacentChest() != null;
     }
-
-/*    @Override
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
-        return new ContainerLockableChest(playerInventory, this, playerIn);
-    }
-
-    @Override
-    public String getGuiID() {
-        return "minecraft:chest";
-    }*/
 
     protected void loadItems() {
         if (key == null) {
@@ -203,7 +168,7 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
 
         for (int i = 0; i < items.length; i++) {
             tag[i] = compound.getCompoundTag("Item" + i);
-            items[i] = ItemStack.loadItemStackFromNBT(tag[i]);
+            items[i] = new ItemStack(tag[i]);
         }
     }
 
@@ -227,8 +192,6 @@ public class InventoryLockableChest implements IInventory/*, IInteractionObject*
     }
 
     @Override
-    public void clear()
-    {
-
+    public void clear() {
     }
 }

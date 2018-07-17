@@ -3,8 +3,8 @@ package com.brandon3055.tolkientweaks.tileentity;
 import com.brandon3055.brandonscore.blocks.TileBCBase;
 import com.brandon3055.brandonscore.lib.TeleportUtils;
 import com.brandon3055.brandonscore.lib.Vec3D;
-import com.brandon3055.brandonscore.network.wrappers.SyncableString;
-import com.brandon3055.brandonscore.network.wrappers.SyncableVec3D;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedString;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedVec3D;
 import com.brandon3055.tolkientweaks.ConfigHandler;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
 import com.brandon3055.tolkientweaks.utils.LogHelper;
@@ -37,19 +37,15 @@ public class TileMilestone extends TileBCBase {
 
     public int coolDown = 0;
     public Map<String, Integer> cooldowns = new HashMap<String, Integer>();
-    public SyncableVec3D milestonePos = new SyncableVec3D(new Vec3D(0, -1, 0), true, false);
-    public SyncableString markerName = new SyncableString("Unnamed...", true, false);
+    public ManagedVec3D milestonePos = register("milestone_pos", new ManagedVec3D(new Vec3D(0, -1, 0))).syncViaTile().saveToTile().finish();
+    public ManagedString markerName = register("marker_name", new ManagedString("Unnamed...")).syncViaTile().saveToTile().finish();
     public List<String> users = new ArrayList<>();
-
-    public TileMilestone() {
-        registerSyncableObject(milestonePos, true);
-        registerSyncableObject(markerName, true);
-    }
+    
 
     public void onActivated(EntityPlayer player){
-        TTWorldData.MilestoneMarker current = TTWorldData.getMap(worldObj).get(player.getName());
+        TTWorldData.MilestoneMarker current = TTWorldData.getMap(world).get(player.getName());
 
-        if (current != null && current.x == pos.getX() && current.y == pos.getY() && current.z == pos.getZ() && current.dimension == worldObj.provider.getDimension()){
+        if (current != null && current.x == pos.getX() && current.y == pos.getY() && current.z == pos.getZ() && current.dimension == world.provider.getDimension()){
             return;
         }
 
@@ -65,14 +61,14 @@ public class TileMilestone extends TileBCBase {
                 m = time + " second" + (time > 1 ? "s" : "");
             }
 
-            player.addChatComponentMessage(new TextComponentString("You must wait "+m+" before you can switch milestones").setStyle(new Style().setColor(TextFormatting.RED)));
+            player.sendMessage(new TextComponentString("You must wait "+m+" before you can switch milestones").setStyle(new Style().setColor(TextFormatting.RED)));
             return;
         }
 
         switchingCooldowns.put(player.getName(), ForgeEventHandler.tick);
 
-        TTWorldData.MilestoneMarker marker = TTWorldData.getMap(worldObj).get(player.getName());
-        TTWorldData.addMarker(worldObj, player.getName(), pos.getX(), pos.getY(), pos.getZ(), worldObj.provider.getDimension());
+        TTWorldData.MilestoneMarker marker = TTWorldData.getMap(world).get(player.getName());
+        TTWorldData.addMarker(world, player.getName(), pos.getX(), pos.getY(), pos.getZ(), world.provider.getDimension());
         dirtyBlock();
         updateBlock();
 
@@ -81,7 +77,7 @@ public class TileMilestone extends TileBCBase {
         }
 
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        World world = server.worldServerForDimension(marker.dimension);
+        World world = server.getWorld(marker.dimension);
 
         TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
@@ -97,8 +93,8 @@ public class TileMilestone extends TileBCBase {
         super.writeExtraNBT(compound);
 
         users.clear();
-        if (worldObj != null){
-            Map<String, TTWorldData.MilestoneMarker> markers = TTWorldData.getMap(worldObj);
+        if (world != null){
+            Map<String, TTWorldData.MilestoneMarker> markers = TTWorldData.getMap(world);
             for (String name : markers.keySet()){
                 TTWorldData.MilestoneMarker marker = markers.get(name);
                 if (marker.x == pos.getX() && marker.y == pos.getY() && marker.z == pos.getZ()){
@@ -136,7 +132,7 @@ public class TileMilestone extends TileBCBase {
         int time = cooldowns.containsKey(player.getName()) ? (cooldowns.get(player.getName()) + coolDown) - ForgeEventHandler.tick : 0;
 
         if (time > 0 && !force && !player.capabilities.isCreativeMode){
-            player.addChatComponentMessage(new TextComponentString(String.format("You must wait %s more seconds before using this milestone again", time / 20)));
+            player.sendMessage(new TextComponentString(String.format("You must wait %s more seconds before using this milestone again", time / 20)));
             return;
         }
 
@@ -147,7 +143,7 @@ public class TileMilestone extends TileBCBase {
 
         cooldowns.put(player.getName(), ForgeEventHandler.tick);
 
-        TeleportUtils.teleportEntity(player, worldObj.provider.getDimension(), milestonePos.vec.x, milestonePos.vec.y, milestonePos.vec.z);
+        TeleportUtils.teleportEntity(player, world.provider.getDimension(), milestonePos.vec.x, milestonePos.vec.y, milestonePos.vec.z);
     }
 
 }

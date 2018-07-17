@@ -1,9 +1,11 @@
 package com.brandon3055.tolkientweaks.blocks;
 
+import codechicken.lib.model.ModelRegistryHelper;
 import com.brandon3055.brandonscore.blocks.BlockBCore;
-import com.brandon3055.brandonscore.config.Feature;
-import com.brandon3055.brandonscore.config.ICustomRender;
+import com.brandon3055.brandonscore.registry.Feature;
+import com.brandon3055.brandonscore.registry.IRenderOverride;
 import com.brandon3055.tolkientweaks.TTFeatures;
+import com.brandon3055.tolkientweaks.client.rendering.CustomBlockItemRenderer;
 import com.brandon3055.tolkientweaks.client.rendering.RenderTileMilestone;
 import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
 import net.minecraft.block.ITileEntityProvider;
@@ -38,14 +40,13 @@ import java.util.Random;
 /**
  * Created by brandon3055 on 3/06/2016.
  */
-public class MileStone extends BlockBCore implements ITileEntityProvider, ICustomRender {
+public class MileStone extends BlockBCore implements ITileEntityProvider, IRenderOverride {
 
     public static final PropertyBool IS_SLAVE_BLOCK = PropertyBool.create("is_slave");
 
     public MileStone() {
         setDefaultState(blockState.getBaseState().withProperty(IS_SLAVE_BLOCK, false));
         this.setBlockUnbreakable();
-        setIsFullCube(false);
     }
 
     @Override
@@ -66,15 +67,21 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     //region Render
 
     @Override
+    public boolean uberIsBlockFullCube() {
+        return false;
+    }
+
+    @Override
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.INVISIBLE;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
         TileMilestone tile = world.getTileEntity(pos) instanceof TileMilestone ? (TileMilestone) world.getTileEntity(pos) : null;
 
-        if (tile != null && tile.users.contains(Minecraft.getMinecraft().thePlayer.getName())){
+        if (tile != null && tile.users.contains(Minecraft.getMinecraft().player.getName())){
             for (int i = 0; i < 4; i++){
                 world.spawnParticle(EnumParticleTypes.PORTAL, pos.getX() + 0.5, pos.getY() + (rand.nextDouble() * 2), pos.getZ() + 0.5,  (rand.nextDouble() - 0.5D) * 3.0D, -rand.nextDouble(), (rand.nextDouble() - 0.5D) * 3.0D);
             }
@@ -85,11 +92,12 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     @Override
     public void registerRenderer(Feature feature) {
         ClientRegistry.bindTileEntitySpecialRenderer(TileMilestone.class, new RenderTileMilestone());
+        ModelRegistryHelper.registerItemRenderer(Item.getItemFromBlock(this), new CustomBlockItemRenderer(this));
     }
 
     @Override
     public boolean registerNormal(Feature feature) {
-        return true;
+        return false;
     }
 
     @Override
@@ -107,16 +115,17 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     }
 
     @Override
-    public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        if (meta == 0){
-            world.setBlockState(pos.add(0, 1, 0), TTFeatures.milestone.getDefaultState().withProperty(IS_SLAVE_BLOCK, true));
-        }
-        return super.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return TTFeatures.milestone.getDefaultState().withProperty(IS_SLAVE_BLOCK, false);
     }
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         TileMilestone tile = world.getTileEntity(pos) instanceof TileMilestone ? (TileMilestone) world.getTileEntity(pos) : null;
+
+        if (!state.getValue(IS_SLAVE_BLOCK)){
+            world.setBlockState(pos.add(0, 1, 0), TTFeatures.milestone.getDefaultState().withProperty(IS_SLAVE_BLOCK, true));
+        }
 
         if (tile != null){
             tile.milestonePos.vec.set(placer.posX, placer.posY + 0.5, placer.posZ);
@@ -138,7 +147,7 @@ public class MileStone extends BlockBCore implements ITileEntityProvider, ICusto
     //endregion
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (world.isRemote){
             return true;
         }

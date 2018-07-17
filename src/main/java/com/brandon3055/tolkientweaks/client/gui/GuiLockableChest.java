@@ -2,6 +2,7 @@ package com.brandon3055.tolkientweaks.client.gui;
 
 import com.brandon3055.tolkientweaks.container.ContainerLockableChest;
 import com.brandon3055.tolkientweaks.container.InventoryLockableChest;
+import com.brandon3055.tolkientweaks.tileentity.TileLockableChest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,9 +20,9 @@ public class GuiLockableChest extends GuiContainer
     private final IInventory lowerChestInventory;
     private final int inventoryRows;
 
-    public GuiLockableChest(InventoryLockableChest chestInv, IInventory playerInv)
+    public GuiLockableChest(TileLockableChest tile, InventoryLockableChest chestInv, IInventory playerInv)
     {
-        super(new ContainerLockableChest(playerInv, chestInv, Minecraft.getMinecraft().thePlayer));
+        super(new ContainerLockableChest(tile, playerInv, chestInv, Minecraft.getMinecraft().player));
         this.upperChestInventory = chestInv;
         this.lowerChestInventory = playerInv;
         this.allowUserInput = false;
@@ -31,12 +32,21 @@ public class GuiLockableChest extends GuiContainer
         this.ySize = 114 + this.inventoryRows * 18;
     }
 
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-    {
-        this.fontRendererObj.drawString((upperChestInventory.isDouble() ? TextFormatting.DARK_PURPLE : TextFormatting.DARK_AQUA) + this.upperChestInventory.getDisplayName().getUnformattedText(), 8, 6, 4210752);
-        this.fontRendererObj.drawString(this.lowerChestInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @Override
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    {
+        this.fontRenderer.drawString((upperChestInventory.isDouble() ? TextFormatting.DARK_PURPLE : TextFormatting.DARK_AQUA) + this.upperChestInventory.getDisplayName().getUnformattedText(), 8, 6, 4210752);
+        this.fontRenderer.drawString(this.lowerChestInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+    }
+
+    @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

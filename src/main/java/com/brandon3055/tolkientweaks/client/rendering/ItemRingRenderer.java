@@ -2,44 +2,31 @@ package com.brandon3055.tolkientweaks.client.rendering;
 
 import codechicken.lib.render.CCModelState;
 import codechicken.lib.render.item.IItemRenderer;
-import codechicken.lib.render.state.GlStateManagerHelper;
+import codechicken.lib.util.TransformUtils;
 import com.brandon3055.tolkientweaks.items.Ring;
 import com.google.common.collect.ImmutableMap;
 import lotr.client.model.LOTRModelPortal;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import static codechicken.lib.util.TransformUtils.get;
-import static codechicken.lib.util.TransformUtils.leftify;
 
 /**
  * Created by Brandon on 13/01/2015.
  */
-public class ItemRingRenderer implements IItemRenderer, IPerspectiveAwareModel {
+public class ItemRingRenderer implements IItemRenderer {
 
     public static ResourceLocation ringTexture = new ResourceLocation("lotr:misc/portal.png");
     public static ResourceLocation writingTexture = new ResourceLocation("lotr:misc/portal_writing.png");
@@ -51,24 +38,20 @@ public class ItemRingRenderer implements IItemRenderer, IPerspectiveAwareModel {
     static {
         TRSRTransformation thirdPerson;
         TRSRTransformation firstPerson;
-        thirdPerson = get(0, 3, 1, 0, 0, 0, 0.55f);
-        firstPerson = get(1.13f, 3.2f, 1.13f, 0, 90, 25, 0.22f);
+        thirdPerson = TransformUtils.create(0, 3, 1, 0, 0, 0, 0.55f);
+        firstPerson = TransformUtils.create(1.13f, 3.2f, 1.13f, 0, 90, 25, 0.22f);
         ImmutableMap.Builder<ItemCameraTransforms.TransformType, TRSRTransformation> defaultItemBuilder = ImmutableMap.builder();
-        defaultItemBuilder.put(ItemCameraTransforms.TransformType.GUI, get(0, 0, 0, 90, 0, 0, 0.6f));
-        defaultItemBuilder.put(ItemCameraTransforms.TransformType.GROUND, get(0, 2, 0, 0, 0, 0, 0.3f));
-        defaultItemBuilder.put(ItemCameraTransforms.TransformType.HEAD, get(0, 13, 7, 0, 180, 0, 1));
+        defaultItemBuilder.put(ItemCameraTransforms.TransformType.GUI, TransformUtils.create(0, 0, 0, 90, 0, 0, 0.6f));
+        defaultItemBuilder.put(ItemCameraTransforms.TransformType.GROUND, TransformUtils.create(0, 2, 0, 0, 0, 0, 0.3f));
+        defaultItemBuilder.put(ItemCameraTransforms.TransformType.HEAD, TransformUtils.create(0, 13, 7, 0, 180, 0, 1));
         defaultItemBuilder.put(ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, thirdPerson);
-        defaultItemBuilder.put(ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, leftify(thirdPerson));
+        defaultItemBuilder.put(ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, TransformUtils.flipLeft(thirdPerson));
         defaultItemBuilder.put(ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, firstPerson);
-        defaultItemBuilder.put(ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, leftify(firstPerson));
+        defaultItemBuilder.put(ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, TransformUtils.flipLeft(firstPerson));
         RING_TRANSFORM = new CCModelState(defaultItemBuilder.build());
     }
 
     //region Unused
-    @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-        return new ArrayList<>();
-    }
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -80,47 +63,24 @@ public class ItemRingRenderer implements IItemRenderer, IPerspectiveAwareModel {
         return false;
     }
 
-    @Override
-    public boolean isBuiltInRenderer() {
-        return true;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return null;
-    }
-
-    @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
-    }
-
-    @Override
-    public ItemOverrideList getOverrides() {
-        return ItemOverrideList.NONE;
-    }
-
     //endregion
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-        return MapWrapper.handlePerspective(this, RING_TRANSFORM.getTransforms(), cameraTransformType);
+    public IModelState getTransforms() {
+        return RING_TRANSFORM;
     }
 
     @Override
-    public void renderItem(ItemStack item) {
+    public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         float glow = 0f;
         int explosionTicks = 0;
-        if (item.hasTagCompound()) {
+        if (stack.hasTagCompound()) {
             glow = Math.min(1f, Ring.glow);
-            explosionTicks = item.getTagCompound().getInteger("ETicks");
+            explosionTicks = stack.getTagCompound().getInteger("ETicks");
         }
 
-//        explosionTicks = BCClientEventHandler.elapsedTicks % 200;
-//        glow = 1F;
-
         GlStateManager.pushMatrix();
-        GlStateManagerHelper.pushState();
+//        GlStateManagerHelper.pushState();
         GlStateManager.disableCull();
         GlStateManager.translate(0.5, 0.5, 0.5);
         GlStateManager.glNormal3f(0.0F, 0.0F, 0.0F);
@@ -151,7 +111,7 @@ public class ItemRingRenderer implements IItemRenderer, IPerspectiveAwareModel {
             float effectScale = (float) (explosionTicks + Minecraft.getMinecraft().getRenderPartialTicks()) / 2F;//50f;;//(BCClientEventHandler.elapsedTicks % 100) / 10F;
 
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer buffer = tessellator.getBuffer();
+            BufferBuilder buffer = tessellator.getBuffer();
             RenderHelper.disableStandardItemLighting();
             Random random = new Random(432L);
             GlStateManager.disableTexture2D();
@@ -200,6 +160,6 @@ public class ItemRingRenderer implements IItemRenderer, IPerspectiveAwareModel {
             RenderHelper.enableStandardItemLighting();
         }
 
-        GlStateManagerHelper.popState();
+//        GlStateManagerHelper.popState();
     }
 }

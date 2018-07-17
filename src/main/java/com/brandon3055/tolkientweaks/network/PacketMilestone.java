@@ -93,16 +93,16 @@ public class PacketMilestone implements IMessage {
                 if (message.function == REQ_NAME) {
                     //region Get Name
 
-                    EntityPlayerMP playerMP = ctx.getServerHandler().playerEntity;
+                    EntityPlayerMP playerMP = ctx.getServerHandler().player;
 
-                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getName())) {
+                    if (!TTWorldData.getMap(playerMP.world).containsKey(playerMP.getName())) {
                         return new PacketMilestone(ERROR, "No milestone set!");
                     }
 
-                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getName());
+                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.world).get(playerMP.getName());
 
                     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-                    World world = server.worldServerForDimension(marker.dimension);
+                    World world = server.getWorld(marker.dimension);
 
                     if (world == null) {
                         return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
@@ -121,16 +121,16 @@ public class PacketMilestone implements IMessage {
                 } else if (message.function == TP) {
                     //region Teleport
 
-                    EntityPlayerMP playerMP = ctx.getServerHandler().playerEntity;
+                    EntityPlayerMP playerMP = ctx.getServerHandler().player;
 
-                    if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getName())) {
+                    if (!TTWorldData.getMap(playerMP.world).containsKey(playerMP.getName())) {
                         return new PacketMilestone(ERROR, "No milestone set!");
                     }
 
-                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getName());
+                    TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.world).get(playerMP.getName());
 
                     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-                    World world = server.worldServerForDimension(marker.dimension);
+                    World world = server.getWorld(marker.dimension);
 
                     if (world == null) {
                         return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
@@ -149,29 +149,6 @@ public class PacketMilestone implements IMessage {
                 }
             }
 
-
-//            EntityPlayerMP playerMP = ctx.getServerHandler().playerEntity;
-//
-//            if (!TTWorldData.getMap(playerMP.worldObj).containsKey(playerMP.getCommandSenderName())){
-//                throw new CommandException("No milestone set!");
-//            }
-//
-//            TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.worldObj).get(playerMP.getCommandSenderName());
-//
-//            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-//            World world = server.worldServerForDimension(marker.dimension);
-//
-//            if (world == null){
-//                throw new CommandException("Dimension %s not found!", marker.dimension);
-//            }
-//
-//            TileEntity tile = world.getTileEntity(marker.x, marker.y, marker.z);
-//
-//            if (!(tile instanceof TileMilestone)){
-//                throw new CommandException("Did not find your bound milestone...");
-//            }
-//
-//            ((TileMilestone)tile).handleTeleport(playerMP);
             return null;
         }
 
@@ -188,7 +165,7 @@ public class PacketMilestone implements IMessage {
                     ((GuiMilestone) Minecraft.getMinecraft().currentScreen).error = message.message;
                 }
                 else {
-                    Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(message.message));
+                    Minecraft.getMinecraft().player.sendMessage(new TextComponentString(message.message));
                 }
             }
         }
