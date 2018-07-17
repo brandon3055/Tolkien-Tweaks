@@ -51,7 +51,8 @@ public class ForgeEventHandler {
                     InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
                     int remainder = InventoryUtils.insertItem(inventory, coins, false);
                     coins.stackSize = remainder;
-                    if (remainder == 0) {
+                    item.setEntityItemStack(coins);
+                    if (remainder <= 0) {
                         item.setDead();
                         event.setResult(Event.Result.DENY);
                         player.worldObj.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_ITEM_PICKUP, player.getSoundCategory(), 0.2F, ((player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
