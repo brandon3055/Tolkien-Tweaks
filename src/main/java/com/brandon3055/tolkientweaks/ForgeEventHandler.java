@@ -1,15 +1,25 @@
 package com.brandon3055.tolkientweaks;
 
 
+import codechicken.lib.inventory.InventoryUtils;
 import com.brandon3055.brandonscore.client.gui.GuiButtonAHeight;
+import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
+import com.brandon3055.tolkientweaks.container.ContainerCoinPouch;
+import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
+import com.brandon3055.tolkientweaks.items.Coin;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,6 +37,37 @@ public class ForgeEventHandler {
     public void tickEvent(TickEvent.ServerTickEvent event){
         if (event.phase == TickEvent.Phase.START) {
             tick++;
+        }
+    }
+
+    @SubscribeEvent
+    public void itemPickup(EntityItemPickupEvent event) {
+        EntityItem item = event.getItem();
+        ItemStack coins = item.getItem();
+
+        if (!coins.isEmpty() && coins.getItem() instanceof Coin && !item.isDead) {
+            EntityPlayer player = event.getEntityPlayer();
+
+            for (ItemStack stack : player.inventory.mainInventory) {
+                if (!stack.isEmpty() && stack.getItem() == TTFeatures.coinPouch) {
+                    InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
+                    if (player.openContainer instanceof ContainerCoinPouch && ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) == ((ContainerCoinPouch) player.openContainer).itemTrackingNumber) {
+                        inventory = ((ContainerCoinPouch) player.openContainer).itemInventory;
+                        player.openContainer.detectAndSendChanges();
+                        ((ContainerCoinPouch) player.openContainer).updateSlots();
+                    }
+
+                    int remainder = InventoryUtils.insertItem(inventory, coins, false);
+                    coins.setCount(remainder);
+                    if (coins.isEmpty()) {
+                        item.setDead();
+                        event.setResult(Event.Result.DENY);
+                        player.world.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_ITEM_PICKUP, player.getSoundCategory(), 0.2F, ((player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                        player.world.playSound(null, player.posX, player.posY, player.posY, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, player.getSoundCategory(), 0.2F, ((player.world.rand.nextFloat() - player.world.rand.nextFloat()) * 0.7F + 1.0F));
+                        return;
+                    }
+                }
+            }
         }
     }
 
