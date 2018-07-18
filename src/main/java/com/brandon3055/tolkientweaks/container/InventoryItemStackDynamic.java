@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -21,8 +22,7 @@ public class InventoryItemStackDynamic implements IInventory {
     private int stackLimit;
     private LinkedList<ItemStack> stacks = new LinkedList<ItemStack>();
 
-    public InventoryItemStackDynamic(ItemStack stack, int stackLimit)
-    {
+    public InventoryItemStackDynamic(ItemStack stack, int stackLimit) {
         this.stack = stack;
         this.stackLimit = stackLimit;
         loadItems();
@@ -32,12 +32,12 @@ public class InventoryItemStackDynamic implements IInventory {
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
-        if (index < 0){
+        if (index < 0) {
             return;
         }
 
         if (stack == null) {
-            if (index < stacks.size()){
+            if (index < stacks.size()) {
                 stacks.remove(index);
             }
         }
@@ -66,7 +66,8 @@ public class InventoryItemStackDynamic implements IInventory {
         if (itemstack != null) {
             if (itemstack.stackSize <= count) {
                 setInventorySlotContents(index, null);
-            } else {
+            }
+            else {
                 itemstack = itemstack.splitStack(count);
                 if (itemstack.stackSize == 0) {
                     setInventorySlotContents(index, null);
@@ -90,20 +91,17 @@ public class InventoryItemStackDynamic implements IInventory {
     //endregion
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return stack.getDisplayName();
     }
 
     @Override
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return false;
     }
 
     @Override
-    public ITextComponent getDisplayName()
-    {
+    public ITextComponent getDisplayName() {
         return new TextComponentString(stack.getDisplayName());
     }
 
@@ -133,25 +131,28 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     @Override
-    public void markDirty()
-    {
+    public void markDirty() {
+        Iterator<ItemStack> i = stacks.iterator();
+        while (i.hasNext()) {
+            ItemStack next = i.next();
+            if (next == null || next.stackSize == 0) {
+                i.remove();
+            }
+        }
         saveItems();
     }
 
     @Override
-    public int getField(int id)
-    {
+    public int getField(int id) {
         return 0;
     }
 
     @Override
-    public void setField(int id, int value)
-    {
+    public void setField(int id, int value) {
     }
 
     @Override
-    public int getFieldCount()
-    {
+    public int getFieldCount() {
         return 0;
     }
 
@@ -191,8 +192,7 @@ public class InventoryItemStackDynamic implements IInventory {
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         stacks.clear();
         saveItems();
     }

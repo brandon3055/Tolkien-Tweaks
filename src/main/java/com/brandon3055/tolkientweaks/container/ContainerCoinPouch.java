@@ -3,7 +3,6 @@ package com.brandon3055.tolkientweaks.container;
 import com.brandon3055.brandonscore.inventory.ContainerBCBase;
 import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
-import com.brandon3055.tolkientweaks.utils.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ClickType;
@@ -27,7 +26,7 @@ public class ContainerCoinPouch extends ContainerBCBase {
     private final EnumHand hand;
     private int numRows;
     private int numSlots;
-    private int itemTrackingNumber;
+    public int itemTrackingNumber;
     boolean shiftClicked = false;
 
     public ContainerCoinPouch(IInventory playerInventory, InventoryItemStackDynamic itemInventory, EntityPlayer player, EnumHand hand) {

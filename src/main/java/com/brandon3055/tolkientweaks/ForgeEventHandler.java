@@ -3,7 +3,9 @@ package com.brandon3055.tolkientweaks;
 
 import codechicken.lib.inventory.InventoryUtils;
 import com.brandon3055.brandonscore.client.gui.GuiButtonAHeight;
+import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
+import com.brandon3055.tolkientweaks.container.ContainerCoinPouch;
 import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
 import com.brandon3055.tolkientweaks.items.Coin;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
@@ -49,6 +51,12 @@ public class ForgeEventHandler {
             for (ItemStack stack : player.inventory.mainInventory) {
                 if (stack != null && stack.getItem() == TTFeatures.coinPouch) {
                     InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
+                    if (player.openContainer instanceof ContainerCoinPouch && ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) == ((ContainerCoinPouch) player.openContainer).itemTrackingNumber) {
+                        inventory = ((ContainerCoinPouch) player.openContainer).itemInventory;
+                        player.openContainer.detectAndSendChanges();
+                        ((ContainerCoinPouch) player.openContainer).updateSlots();
+                    }
+
                     int remainder = InventoryUtils.insertItem(inventory, coins, false);
                     coins.stackSize = remainder;
                     item.setEntityItemStack(coins);
