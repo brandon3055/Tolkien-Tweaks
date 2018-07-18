@@ -2,7 +2,9 @@ package com.brandon3055.tolkientweaks.client;
 
 import codechicken.lib.inventory.InventoryUtils;
 import com.brandon3055.brandonscore.handlers.HandHelper;
+import com.brandon3055.brandonscore.utils.ItemNBTHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
+import com.brandon3055.tolkientweaks.container.ContainerCoinPouch;
 import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
 import com.brandon3055.tolkientweaks.items.Coin;
 import net.minecraft.client.gui.*;
@@ -46,6 +48,12 @@ public class ClientEventHandler {
 			for (ItemStack stack : player.inventory.mainInventory) {
 				if (!stack.isEmpty() && stack.getItem() == TTFeatures.coinPouch) {
 					InventoryItemStackDynamic inventory = new InventoryItemStackDynamic(stack, 54);
+					if (player.openContainer instanceof ContainerCoinPouch && ItemNBTHelper.getInteger(stack, "itemTrackingNumber", -1) == ((ContainerCoinPouch) player.openContainer).itemTrackingNumber) {
+						inventory = ((ContainerCoinPouch) player.openContainer).itemInventory;
+						player.openContainer.detectAndSendChanges();
+						((ContainerCoinPouch) player.openContainer).updateSlots();
+					}
+
 					int remainder = InventoryUtils.insertItem(inventory, coins, false);
 					coins.setCount(remainder);
 					if (coins.isEmpty()) {

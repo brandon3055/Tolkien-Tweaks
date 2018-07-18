@@ -14,6 +14,10 @@ import net.minecraft.world.World;
  */
 public class CoinPouch extends ItemBCore {
 
+    public CoinPouch() {
+        this.setMaxStackSize(1);
+    }
+
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
         if (!worldIn.isRemote) {

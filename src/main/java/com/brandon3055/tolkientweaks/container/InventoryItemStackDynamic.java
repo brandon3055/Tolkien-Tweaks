@@ -134,6 +134,7 @@ public class InventoryItemStackDynamic implements IInventory {
 
     @Override
     public void markDirty() {
+        stacks.removeIf(ItemStack::isEmpty);
         saveItems();
     }
 

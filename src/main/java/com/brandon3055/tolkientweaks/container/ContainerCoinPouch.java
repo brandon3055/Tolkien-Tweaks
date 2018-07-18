@@ -26,7 +26,7 @@ public class ContainerCoinPouch extends Container {
     private final EnumHand hand;
     private int numRows;
     private int numSlots;
-    private int itemTrackingNumber;
+    public int itemTrackingNumber;
     boolean shiftClicked = false;
 
     public ContainerCoinPouch(IInventory playerInventory, InventoryItemStackDynamic itemInventory, EntityPlayer player, EnumHand hand) {
