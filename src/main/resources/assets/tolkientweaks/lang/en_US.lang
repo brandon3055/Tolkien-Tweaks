@@ -26,6 +26,7 @@ tile.tolkientweaks:milestone.name=Milestone
 tile.tolkientweaks:camo_glowstone.name=Camouflaged Glowstone
 tile.tolkientweaks:fluid_source.name=Camouflaged Fluid Source
 tile.tolkientweaks:lockable_chest.name=Lockable Chest
+tile.tolkientweaks:camo_spawner.name=Camouflage Spawner
 
 
 entity.TolkienTweaks.Backpack.name=Backpack

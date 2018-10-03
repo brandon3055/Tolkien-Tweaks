@@ -35,7 +35,7 @@ public class ClientEventHandler {
 
 			try
 			{
-				Field parentGui = ReflectionHelper.findField(GuiShareToLan.class, "field_146598_a");
+				Field parentGui = ReflectionHelper.findField(GuiShareToLan.class, "field_146598_a", "lastScreen");
 				parentGui.setAccessible(true);
 
 				Object parent = parentGui.get(gui);

@@ -2,6 +2,7 @@ package com.brandon3055.tolkientweaks.network;
 
 import com.brandon3055.brandonscore.network.MessageHandlerWrapper;
 import com.brandon3055.tolkientweaks.ForgeEventHandler;
+import com.brandon3055.tolkientweaks.TolkienTweaks;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
 import com.brandon3055.tolkientweaks.tileentity.TileMilestone;
 import com.brandon3055.tolkientweaks.utils.TTWorldData;
@@ -105,17 +106,20 @@ public class PacketMilestone implements IMessage {
                     World world = server.getWorld(marker.dimension);
 
                     if (world == null) {
-                        return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
+                        TolkienTweaks.network.sendTo(new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension)), playerMP);
+                        return null;
                     }
 
                     TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
                     if (!(tile instanceof TileMilestone)) {
-                        return new PacketMilestone(ERROR, "Did not find your bound milestone...");
+                        TolkienTweaks.network.sendTo(new PacketMilestone(ERROR, "Did not find your bound milestone..."), playerMP);
+                        return null;
                     }
 
                     int time = ((TileMilestone) tile).cooldowns.containsKey(playerMP.getName()) ? (((TileMilestone) tile).cooldowns.get(playerMP.getName()) + ((TileMilestone) tile).coolDown) - ForgeEventHandler.tick : 0;
-                    return new PacketMilestone(NAME, ((TileMilestone) tile).markerName.value, time);
+                    TolkienTweaks.network.sendTo(new PacketMilestone(NAME, ((TileMilestone) tile).markerName.value, time), playerMP);
+                    return null;
 
                     //endregion
                 } else if (message.function == TP) {
@@ -124,7 +128,8 @@ public class PacketMilestone implements IMessage {
                     EntityPlayerMP playerMP = ctx.getServerHandler().player;
 
                     if (!TTWorldData.getMap(playerMP.world).containsKey(playerMP.getName())) {
-                        return new PacketMilestone(ERROR, "No milestone set!");
+                        TolkienTweaks.network.sendTo(new PacketMilestone(ERROR, "No milestone set!"), playerMP);
+                        return null;
                     }
 
                     TTWorldData.MilestoneMarker marker = TTWorldData.getMap(playerMP.world).get(playerMP.getName());
@@ -133,13 +138,15 @@ public class PacketMilestone implements IMessage {
                     World world = server.getWorld(marker.dimension);
 
                     if (world == null) {
-                        return new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension));
+                        TolkienTweaks.network.sendTo(new PacketMilestone(ERROR, String.format("Dimension %s not found!", marker.dimension)), playerMP);
+                        return null;
                     }
 
                     TileEntity tile = world.getTileEntity(new BlockPos(marker.x, marker.y, marker.z));
 
                     if (!(tile instanceof TileMilestone)) {
-                        return new PacketMilestone(ERROR, "Did not find your bound milestone...");
+                        TolkienTweaks.network.sendTo(new PacketMilestone(ERROR, "Did not find your bound milestone..."), playerMP);
+                        return null;
                     }
 
                     ((TileMilestone) tile).handleTeleport(playerMP, false);

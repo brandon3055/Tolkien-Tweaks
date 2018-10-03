@@ -33,6 +33,7 @@ public class CustomBlockItemRenderer implements IItemRenderer {
     private static final ItemStack GLOWSTONE = new ItemStack(Blocks.GLOWSTONE);
     private static final ItemStack KEY = new ItemStack(TTFeatures.key);
     private static final ItemStack BLAZE = new ItemStack(Items.BLAZE_POWDER);
+    private static final ItemStack SPAWNER = new ItemStack(Blocks.MOB_SPAWNER);
 
     public static ResourceLocation texture = new ResourceLocation("tolkientweaks:textures/blocks/milestone.png");
     private Block type;
@@ -74,6 +75,9 @@ public class CustomBlockItemRenderer implements IItemRenderer {
         }
         else if (type == TTFeatures.smoker) {
             renderCamoBlock(BLAZE, true);
+        }
+        else if (type == TTFeatures.camoSpawner) {
+            renderCamoBlock(SPAWNER, false);
         }
     }
 

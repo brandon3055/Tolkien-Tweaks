@@ -16,7 +16,9 @@ public class HypeHorn extends Item {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		world.playSound(player.posX, player.posY, player.posZ, TTSounds.hypeHorn, SoundCategory.PLAYERS, 5F, 0.95F + world.rand.nextFloat() * 0.1F, true);
+		if (!world.isRemote){
+			world.playSound(null, player.posX, player.posY, player.posZ, TTSounds.hypeHorn, SoundCategory.PLAYERS, 5F, 0.95F + world.rand.nextFloat() * 0.1F);
+		}
 		return super.onItemRightClick(world, player, hand);
 	}
 }

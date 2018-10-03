@@ -97,5 +97,8 @@ public class TTFeatures implements IModFeatures {
     @ModFeature(name = "fluid_source", tileEntity = TileFluidSource2.class)
     public static FluidSource2 fluidSource = new FluidSource2();
 
+    @ModFeature(name = "camo_spawner", tileEntity = TileCamoSpawner.class)
+    public static CamoSpawner camoSpawner = new CamoSpawner();
+
     //endregion
 }

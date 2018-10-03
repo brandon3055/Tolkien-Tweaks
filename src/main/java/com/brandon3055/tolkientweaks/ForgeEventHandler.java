@@ -11,6 +11,7 @@ import com.brandon3055.tolkientweaks.items.Coin;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -20,10 +21,16 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.WeakHashMap;
 
 /**
  * Created by Brandon on 22/01/2015.
@@ -33,10 +40,37 @@ public class ForgeEventHandler {
     public static int tick = 0;
     public static final int MILESTONE_BUTTON_ID = 24261;
 
+
+    private static WeakHashMap<EntityLiving, Long> ttSpawnedMobs = new WeakHashMap<>();
+    private static Random random = new Random();
+
+    public static int serverTicks = 0;
+
+
+    //region Ticking
+
+    public static void onMobSpawnedBySpawner(EntityLiving entity) {
+        ttSpawnedMobs.put(entity, System.currentTimeMillis());
+    }
+
     @SubscribeEvent
     public void tickEvent(TickEvent.ServerTickEvent event){
-        if (event.phase == TickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.END) {
             tick++;
+
+            if (!ttSpawnedMobs.isEmpty()) {
+                List<EntityLiving> toRemove = new ArrayList<>();
+                long time = System.currentTimeMillis();
+
+                ttSpawnedMobs.forEach((entity, aLong) -> {
+                    if (time - aLong > 30000) {
+                        entity.persistenceRequired = false;
+                        toRemove.add(entity);
+                    }
+                });
+
+                toRemove.forEach(entity -> ttSpawnedMobs.remove(entity));
+            }
         }
     }
 
@@ -84,7 +118,7 @@ public class ForgeEventHandler {
 	}
 
     @SideOnly(Side.CLIENT)
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void guiInit(GuiScreenEvent.InitGuiEvent.Post event){
         if (event.getGui() instanceof GuiInventory){
             int x = event.getGui().width / 2 - 30;
