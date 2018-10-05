@@ -27,10 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * Created by Brandon on 22/01/2015.
@@ -62,12 +59,14 @@ public class ForgeEventHandler {
                 List<EntityLiving> toRemove = new ArrayList<>();
                 long time = System.currentTimeMillis();
 
-                ttSpawnedMobs.forEach((entity, aLong) -> {
+                for (Map.Entry<EntityLiving, Long> entry : ttSpawnedMobs.entrySet()) {
+                    EntityLiving key = entry.getKey();
+                    Long aLong = entry.getValue();
                     if (time - aLong > 30000) {
-                        entity.persistenceRequired = false;
-                        toRemove.add(entity);
+                        key.persistenceRequired = false;
+                        toRemove.add(key);
                     }
-                });
+                }
 
                 toRemove.forEach(entity -> ttSpawnedMobs.remove(entity));
             }

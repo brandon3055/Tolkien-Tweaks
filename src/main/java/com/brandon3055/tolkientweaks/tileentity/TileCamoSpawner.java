@@ -20,10 +20,13 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -31,16 +34,14 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * Created by Brandon on 8/02/2015.
  */
 public class TileCamoSpawner extends TileChameleon implements ITickable, IActivatableTile {
 
-    public ManagedString entityTag = register("entityTag", new ManagedString("")).saveToTile().saveToItem().syncViaTile().finish();
+    //    public ManagedString entityTag = register("entityTag", new ManagedString("")).saveToTile().saveToItem().syncViaTile().finish();
     public ManagedShort minSpawnDelay = register("minSpawnDelay", new ManagedShort(200)).saveToTile().syncViaTile().finish();
     public ManagedShort maxSpawnDelay = register("maxSpawnDelay", new ManagedShort(800)).saveToTile().syncViaTile().finish();
 
@@ -55,6 +56,8 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
 
     public ManagedShort spawnDelay = register("spawnDelay", new ManagedShort(0)).saveToTile().syncViaTile().finish();
     public ManagedShort startSpawnDelay = register("startSpawnDelay", new ManagedShort(100)).saveToTile().syncViaTile().finish(); //For rendering
+
+    public List<String> entityTags = new ArrayList<>();
 
     public boolean disableCamo = false;
     public double mobRotation;
@@ -86,7 +89,7 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
     }
 
     private void updateSpawnerLogic() {
-        if (!isActive() || entityTag.value.isEmpty()) return;
+        if (!isActive() || entityTags.isEmpty()) return;
 
         if (world.isRemote && spawnerParticles.value) {
             mobRotation += getRotationSpeed();
@@ -176,7 +179,7 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
     }
 
     private boolean isActive() {
-        if (entityTag.value.isEmpty()) {
+        if (entityTags.isEmpty()) {
             return false;
         }
         return !requirePlayer.value || world.isAnyPlayerWithinRangeAt(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, activationRange.value);
@@ -194,8 +197,16 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
     public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
         if (player.isCreative() && stack.isEmpty()) {
-            if (world.isRemote) {
+            if (player.isSneaking()) {
+                entityTags.clear();
+                if (!world.isRemote) {
+                    player.sendMessage(new TextComponentString("All existing entities cleared..."));
+                }
+            }
+            else if (world.isRemote) {
                 openGUI();
+                player.sendMessage(new TextComponentString("Spawner Entities:"));
+                entityTags.forEach(s -> player.sendMessage(new TextComponentString(s)));
             }
             return true;
         }
@@ -204,7 +215,12 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
             if (stack.getItem() == Items.SPAWN_EGG) {
                 NBTTagCompound compound = stack.getSubCompound("EntityTag");
                 if (compound != null && compound.hasKey("id")) {
-                    entityTag.value = compound.toString();
+                    entityTags.add(compound.toString());
+                    if (!world.isRemote) {
+                        player.sendMessage(new TextComponentString("Entity Added"));
+                        player.sendMessage(new TextComponentString("Spawner Entities:"));
+                        entityTags.forEach(s -> player.sendMessage(new TextComponentString(s)));
+                    }
                 }
                 return true;
             }
@@ -257,11 +273,21 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
     @Override
     public void writeExtraNBT(NBTTagCompound compound) {
         super.writeExtraNBT(compound);
+        NBTTagList list = new NBTTagList();
+        for (String tag : entityTags) {
+            list.appendTag(new NBTTagString(tag));
+        }
+        compound.setTag("EntityList", list);
     }
 
     @Override
     public void readExtraNBT(NBTTagCompound compound) {
         super.readExtraNBT(compound);
+        entityTags.clear();
+        NBTTagList list = compound.getTagList("EntityList", 8);
+        for (int i = 0; i < list.tagCount(); i++) {
+            entityTags.add(list.getStringTagAt(i));
+        }
     }
 
     @Override
@@ -277,8 +303,9 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
     //Entity Stuffs
 
     public Entity createEntity(World world, double x, double y, double z) {
+        String randTag = entityTags.get(world.rand.nextInt(entityTags.size()));
         try {
-            NBTTagCompound entityData = JsonToNBT.getTagFromJson(entityTag.value);
+            NBTTagCompound entityData = JsonToNBT.getTagFromJson(randTag);
             if (!entityData.hasKey("id")) return null;
             String id = entityData.getString("id");
 

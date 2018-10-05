@@ -38,7 +38,6 @@ public class GuiCamoSpawner extends ModularGuiScreen {
 
         int yPos = container.yPos() + 5;
 
-        yPos = addElement(yPos, container, createConfigElement("entityTag"));
         yPos = addElement(yPos, container, createConfigElement("minSpawnDelay"));
         yPos = addElement(yPos, container, createConfigElement("maxSpawnDelay"));
         yPos = addElement(yPos, container, createConfigElement("activationRange"));
