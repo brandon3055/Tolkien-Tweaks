@@ -21,6 +21,7 @@ public class ClientProxy extends CommonProxy {
 		super.preInit(event);
 		registerRendering();
 		TextureUtils.addIconRegister(new TTTextureCache());
+		KeyInputHandler.init();
 	}
 
 	@Override

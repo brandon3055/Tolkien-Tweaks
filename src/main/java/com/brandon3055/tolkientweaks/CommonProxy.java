@@ -5,6 +5,7 @@ import com.brandon3055.tolkientweaks.entity.EntityPersistentItem;
 import com.brandon3055.tolkientweaks.entity.EntityPalantir;
 import com.brandon3055.tolkientweaks.entity.EntityRing;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
+import com.brandon3055.tolkientweaks.network.PacketPlaceItem;
 import com.brandon3055.tolkientweaks.network.PacketSetKey;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -46,6 +47,7 @@ public class CommonProxy {
         TolkienTweaks.network.registerMessage(PacketMilestone.Handler.class, PacketMilestone.class, 0, Side.SERVER);
         TolkienTweaks.network.registerMessage(PacketMilestone.Handler.class, PacketMilestone.class, 1, Side.CLIENT);
 		TolkienTweaks.network.registerMessage(PacketSetKey.Handler.class, PacketSetKey.class, 2, Side.SERVER);
+		TolkienTweaks.network.registerMessage(PacketPlaceItem.Handler.class, PacketPlaceItem.class, 3, Side.SERVER);
 	}
 
 	public boolean isOp(String paramString) {

@@ -31,6 +31,8 @@ tile.tolkientweaks:camo_spawner.name=Camouflage Spawner
 
 entity.TolkienTweaks.Backpack.name=Backpack
 
+tt.key.placeItem=Place Item In World
+
 msg.tolkienaddon.keySet.txt=Key bound to builder block
 msg.tolkienaddon.keyWrong.txt=§4Wrong Key!!!
 msg.tolkienaddon.keyWrongOwner.txt=§4This key does not belong to you!

@@ -19,8 +19,8 @@ import net.minecraft.util.ResourceLocation;
  */
 public class TileChameleon extends TileBCBase implements IChameleonStateProvider {
 
-    private final ManagedString blockName = register("block_name", new ManagedString("minecraft:stone")).syncViaTile().saveToTile().finish();
-    private final ManagedByte blockMeta = register("block_meta", new ManagedByte((byte) 0)).syncViaTile().saveToTile().finish();
+    private final ManagedString blockName = register("block_name", new ManagedString("minecraft:stone")).syncViaTile().saveToTile().saveToItem().finish();
+    private final ManagedByte blockMeta = register("block_meta", new ManagedByte((byte) 0)).syncViaTile().saveToTile().saveToItem().finish();
     private ChameleonBlock thisBlock;
     private IBlockState chameleonState = null;
     private boolean usingFallbackState = true;

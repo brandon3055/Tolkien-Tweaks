@@ -42,20 +42,20 @@ import java.util.*;
 public class TileCamoSpawner extends TileChameleon implements ITickable, IActivatableTile {
 
     //    public ManagedString entityTag = register("entityTag", new ManagedString("")).saveToTile().saveToItem().syncViaTile().finish();
-    public ManagedShort minSpawnDelay = register("minSpawnDelay", new ManagedShort(200)).saveToTile().syncViaTile().finish();
-    public ManagedShort maxSpawnDelay = register("maxSpawnDelay", new ManagedShort(800)).saveToTile().syncViaTile().finish();
+    public ManagedShort minSpawnDelay = register("minSpawnDelay", new ManagedShort(200)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedShort maxSpawnDelay = register("maxSpawnDelay", new ManagedShort(800)).saveToTile().saveToItem().syncViaTile().finish();
 
-    public ManagedShort activationRange = register("activationRange", new ManagedShort(24)).saveToTile().syncViaTile().finish();
-    public ManagedShort spawnRange = register("spawnRange", new ManagedShort(4)).saveToTile().syncViaTile().finish();
-    public ManagedBool requirePlayer = register("requirePlayer", new ManagedBool(true)).saveToTile().syncViaTile().finish();
-    public ManagedBool ignoreSpawnReq = register("ignoreSpawnReq", new ManagedBool(true)).saveToTile().syncViaTile().finish();
-    public ManagedBool spawnerParticles = register("spawnerParticles", new ManagedBool(true)).saveToTile().syncViaTile().finish();
-    public ManagedByte spawnCount = register("spawnCount", new ManagedByte(4)).saveToTile().syncViaTile().finish();
-    public ManagedByte maxCluster = register("maxCluster", new ManagedByte(32)).saveToTile().syncViaTile().finish();
-    public ManagedByte clusterRange = register("clusterRange", new ManagedByte(5)).saveToTile().syncViaTile().finish();
+    public ManagedShort activationRange = register("activationRange", new ManagedShort(24)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedShort spawnRange = register("spawnRange", new ManagedShort(4)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedBool requirePlayer = register("requirePlayer", new ManagedBool(true)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedBool ignoreSpawnReq = register("ignoreSpawnReq", new ManagedBool(true)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedBool spawnerParticles = register("spawnerParticles", new ManagedBool(true)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedByte spawnCount = register("spawnCount", new ManagedByte(4)).saveToTile().syncViaTile().saveToItem().finish();
+    public ManagedByte maxCluster = register("maxCluster", new ManagedByte(32)).saveToTile().syncViaTile().saveToItem().finish();
+    public ManagedByte clusterRange = register("clusterRange", new ManagedByte(5)).saveToTile().syncViaTile().saveToItem().finish();
 
-    public ManagedShort spawnDelay = register("spawnDelay", new ManagedShort(0)).saveToTile().syncViaTile().finish();
-    public ManagedShort startSpawnDelay = register("startSpawnDelay", new ManagedShort(100)).saveToTile().syncViaTile().finish(); //For rendering
+    public ManagedShort spawnDelay = register("spawnDelay", new ManagedShort(0)).saveToTile().saveToItem().syncViaTile().finish();
+    public ManagedShort startSpawnDelay = register("startSpawnDelay", new ManagedShort(100)).saveToTile().saveToItem().syncViaTile().finish(); //For rendering
 
     public List<String> entityTags = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
             world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d3, d4, d5, 0.0D, 0.0D, 0.0D);
             world.spawnParticle(EnumParticleTypes.FLAME, d3, d4, d5, 0.0D, 0.0D, 0.0D);
         }
-        else {
+        else if (!world.isRemote){
             if (spawnDelay.value == -1) {
                 resetTimer();
             }
@@ -116,7 +116,8 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
                 double spawnX = pos.getX() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double) this.spawnRange.value + 0.5D;
                 double spawnY = pos.getY() + world.rand.nextInt(3) - 1;
                 double spawnZ = pos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double) this.spawnRange.value + 0.5D;
-                Entity entity = createEntity(world, spawnX, spawnY, spawnZ);
+                String randTag = entityTags.get(world.rand.nextInt(entityTags.size()));
+                Entity entity = createEntity(world, randTag);
                 entity.setPositionAndRotation(spawnX, spawnY, spawnZ, 0, 0);
 
                 int nearby = world.getEntitiesWithinAABB(entity.getClass(), (new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), (pos.getX() + 1), (pos.getY() + 1), (pos.getZ() + 1))).grow(clusterRange.value)).size();
@@ -145,7 +146,9 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
                         ForgeEventHandler.onMobSpawnedBySpawner((EntityLiving) entity);
                     }
                     AnvilChunkLoader.spawnEntity(entity, world);
-                    world.playEvent(2004, pos, 0);
+                    if (spawnerParticles.value){
+                        world.playEvent(2004, pos, 0);
+                    }
                     if (entityliving != null) {
                         entityliving.spawnExplosionParticle();
                     }
@@ -205,8 +208,6 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
             }
             else if (world.isRemote) {
                 openGUI();
-                player.sendMessage(new TextComponentString("Spawner Entities:"));
-                entityTags.forEach(s -> player.sendMessage(new TextComponentString(s)));
             }
             return true;
         }
@@ -218,8 +219,6 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
                     entityTags.add(compound.toString());
                     if (!world.isRemote) {
                         player.sendMessage(new TextComponentString("Entity Added"));
-                        player.sendMessage(new TextComponentString("Spawner Entities:"));
-                        entityTags.forEach(s -> player.sendMessage(new TextComponentString(s)));
                     }
                 }
                 return true;
@@ -265,6 +264,16 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
                 boolData.value = data.readBoolean();
             }
         }
+        else if (id == 2) {
+            String tag = data.readString();
+            boolean all = data.readBoolean();
+            entityTags.remove(tag);
+            if (all) {
+                while (entityTags.contains(tag)) {
+                    entityTags.remove(tag);
+                }
+            }
+        }
 
         dirtyBlock();
         updateBlock();
@@ -272,7 +281,6 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
 
     @Override
     public void writeExtraNBT(NBTTagCompound compound) {
-        super.writeExtraNBT(compound);
         NBTTagList list = new NBTTagList();
         for (String tag : entityTags) {
             list.appendTag(new NBTTagString(tag));
@@ -282,12 +290,23 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
 
     @Override
     public void readExtraNBT(NBTTagCompound compound) {
-        super.readExtraNBT(compound);
         entityTags.clear();
         NBTTagList list = compound.getTagList("EntityList", 8);
         for (int i = 0; i < list.tagCount(); i++) {
             entityTags.add(list.getStringTagAt(i));
         }
+    }
+
+    @Override
+    public void writeToItemStack(NBTTagCompound tileCompound, boolean willHarvest) {
+        super.writeToItemStack(tileCompound, willHarvest);
+        writeExtraNBT(tileCompound);
+    }
+
+    @Override
+    public void readFromItemStack(NBTTagCompound tileCompound) {
+        super.readFromItemStack(tileCompound);
+        readExtraNBT(tileCompound);
     }
 
     @Override
@@ -302,10 +321,9 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
 
     //Entity Stuffs
 
-    public Entity createEntity(World world, double x, double y, double z) {
-        String randTag = entityTags.get(world.rand.nextInt(entityTags.size()));
+    public static Entity createEntity(World world, String entityTag) {
         try {
-            NBTTagCompound entityData = JsonToNBT.getTagFromJson(randTag);
+            NBTTagCompound entityData = JsonToNBT.getTagFromJson(entityTag);
             if (!entityData.hasKey("id")) return null;
             String id = entityData.getString("id");
 
@@ -314,7 +332,6 @@ public class TileCamoSpawner extends TileChameleon implements ITickable, IActiva
                 entity = new EntityPig(world);
             }
             else {
-//                entity.setPosition(x, y, z);
                 EntityLiving entityliving = (EntityLiving) entity;
                 entityliving.rotationYawHead = entityliving.rotationYaw;
                 entityliving.renderYawOffset = entityliving.rotationYaw;

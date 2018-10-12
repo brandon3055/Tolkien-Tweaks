@@ -100,5 +100,8 @@ public class TTFeatures implements IModFeatures {
     @ModFeature(name = "camo_spawner", tileEntity = TileCamoSpawner.class)
     public static CamoSpawner camoSpawner = new CamoSpawner();
 
+    @ModFeature(name = "placed_item", tileEntity = TilePlacedItem.class, cTab = -1)
+    public static PlacedItem placedItem = new PlacedItem();
+
     //endregion
 }
