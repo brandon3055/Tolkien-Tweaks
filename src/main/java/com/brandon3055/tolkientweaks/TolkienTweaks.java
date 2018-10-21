@@ -5,6 +5,7 @@ import com.brandon3055.brandonscore.registry.ModFeatureParser;
 import com.brandon3055.tolkientweaks.client.gui.GuiHandler;
 import com.brandon3055.tolkientweaks.command.CommandMilestone;
 import com.brandon3055.tolkientweaks.command.CommandMilestoneConfig;
+import com.brandon3055.tolkientweaks.command.CommandReloadCommands;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -39,6 +40,7 @@ public class TolkienTweaks
 	public void serverLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandMilestoneConfig());
         event.registerServerCommand(new CommandMilestone());
+        event.registerServerCommand(new CommandReloadCommands());
 	}
 
     @Mod.EventHandler

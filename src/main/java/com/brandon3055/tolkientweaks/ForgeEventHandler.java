@@ -4,6 +4,7 @@ package com.brandon3055.tolkientweaks;
 import codechicken.lib.inventory.InventoryUtils;
 import com.brandon3055.brandonscore.client.gui.GuiButtonAHeight;
 import com.brandon3055.brandonscore.utils.ItemNBTHelper;
+import com.brandon3055.tolkientweaks.ConfigHandler.ChatCommand;
 import com.brandon3055.tolkientweaks.client.gui.GuiMilestone;
 import com.brandon3055.tolkientweaks.container.ContainerCoinPouch;
 import com.brandon3055.tolkientweaks.container.InventoryItemStackDynamic;
@@ -11,13 +12,20 @@ import com.brandon3055.tolkientweaks.items.Coin;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -27,6 +35,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -135,4 +144,63 @@ public class ForgeEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public void chatEvent(ServerChatEvent event) {
+        String message = event.getComponent().getFormattedText().toLowerCase();
+
+        for (ChatCommand command : ConfigHandler.chatCommands) {
+            if (message.contains(command.trigger)) {
+                EntityPlayerMP player = event.getPlayer();
+                MinecraftServer server = player.mcServer;
+                if (server == null) return;
+                COMMAND_SENDER.update(server, player.world, player.getPosition());
+                command.checkRunCommand(player, server, COMMAND_SENDER);
+            }
+        }
+    }
+
+    private static TTCommandSender COMMAND_SENDER = new TTCommandSender();
+    public static class TTCommandSender implements ICommandSender {
+
+        private World world;
+        private MinecraftServer server;
+        private BlockPos position;
+
+        public void update(MinecraftServer server, World world, BlockPos position) {
+            this.server = server;
+            this.world = world;
+            this.position = position;
+        }
+
+        @Override
+        public String getName() {
+            return "[Tolkien Tweaks]";
+        }
+
+        @Override
+        public boolean canUseCommand(int permLevel, String commandName) {
+            return true;
+        }
+
+        @Override
+        public World getEntityWorld() {
+            return world;
+        }
+
+        @Nullable
+        @Override
+        public MinecraftServer getServer() {
+            return server;
+        }
+
+        @Override
+        public BlockPos getPosition() {
+            return position;
+        }
+
+        @Override
+        public Vec3d getPositionVector() {
+            return new Vec3d(position.getX() + 0.5D, position.getY() + 0.5D, position.getZ() + 0.5D);
+        }
+    }
 }
