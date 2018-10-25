@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import java.io.File;
 import java.util.Collections;
 
-@Mod(modid = TolkienTweaks.MODID, name = TolkienTweaks.MODNAME,version = TolkienTweaks.VERSION, dependencies = "required-after:draconicevolution;required-after:brandonscore")//;required-after:lotr;required-after:Railcraft")
+@Mod(modid = TolkienTweaks.MODID, name = TolkienTweaks.MODNAME,version = TolkienTweaks.VERSION, dependencies = "after:draconicevolution;required-after:brandonscore")//;required-after:lotr;required-after:Railcraft")
 public class TolkienTweaks
 {
     public static final String MODID = "tolkientweaks";
