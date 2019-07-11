@@ -7,6 +7,7 @@ import com.brandon3055.tolkientweaks.entity.EntityRing;
 import com.brandon3055.tolkientweaks.network.PacketMilestone;
 import com.brandon3055.tolkientweaks.network.PacketPlaceItem;
 import com.brandon3055.tolkientweaks.network.PacketSetKey;
+import com.brandon3055.tolkientweaks.utils.TTOreDictionary;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -24,6 +25,7 @@ public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent event) {
 		registerEntities();
+		TTOreDictionary.init();
 	}
 
 	public void init() {

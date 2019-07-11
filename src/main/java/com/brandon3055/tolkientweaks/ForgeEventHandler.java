@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -87,7 +88,15 @@ public class ForgeEventHandler {
         EntityItem item = event.getItem();
         ItemStack coins = item.getItem();
 
-        if (!coins.isEmpty() && coins.getItem() instanceof Coin && !item.isDead) {
+        boolean flag = false;
+        int[] ids = OreDictionary.getOreIDs(coins);
+        for(int id: ids)
+            if(OreDictionary.getOreName(id).contains("itemCoin") || OreDictionary.getOreName(id).contains("itemToken") ){
+                flag = true;
+                break;
+            }
+
+        if (!coins.isEmpty() && coins.getItem() instanceof Coin || flag && !item.isDead) {
             EntityPlayer player = event.getEntityPlayer();
 
             for (ItemStack stack : player.inventory.mainInventory) {

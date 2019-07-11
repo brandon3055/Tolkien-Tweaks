@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 
@@ -58,7 +59,17 @@ public class ContainerCoinPouch extends Container {
                     this.addSlotToContainer(new Slot(itemInventory, k + j * 9, 8 + k * 18, 18 + j * 18) {
                         @Override
                         public boolean isItemValid(ItemStack stack) {
-                            return !stack.isEmpty() && (stack.getItem() == TTFeatures.brons_coin || stack.getItem() == TTFeatures.gold_coin || stack.getItem() == TTFeatures.silver_coin);
+//                            return !stack.isEmpty() && (stack.getItem() == TTFeatures.brons_coin || stack.getItem() == TTFeatures.gold_coin || stack.getItem() == TTFeatures.silver_coin);
+                            int[] ids = OreDictionary.getOreIDs(stack);
+
+                            for (int id : ids) {
+                                String name = OreDictionary.getOreName(id);
+                                if (name.equals("itemCoin") || name.equals("itemToken") ) {
+                                    return true;
+                                }
+                            }
+                            return false;
+
                         }
                     });
                 }
