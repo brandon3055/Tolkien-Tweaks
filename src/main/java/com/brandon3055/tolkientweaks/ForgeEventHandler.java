@@ -87,17 +87,24 @@ public class ForgeEventHandler {
     public void itemPickup(EntityItemPickupEvent event) {
         EntityItem item = event.getItem();
         ItemStack coins = item.getItem();
+        EntityPlayer player = event.getEntityPlayer();
+
+        if (coins.isEmpty()) {
+            return;
+        }
 
         boolean flag = false;
+
         int[] ids = OreDictionary.getOreIDs(coins);
         for(int id: ids)
-            if(OreDictionary.getOreName(id).contains("itemCoin") || OreDictionary.getOreName(id).contains("itemToken") ){
+            if(!player.inventory.getStackInSlot(id).equals(ItemStack.EMPTY)) {
+            if (OreDictionary.getOreName(id).contains("itemCoin") || OreDictionary.getOreName(id).contains("itemToken")) {
                 flag = true;
                 break;
             }
+        }
 
         if (!coins.isEmpty() && coins.getItem() instanceof Coin || flag && !item.isDead) {
-            EntityPlayer player = event.getEntityPlayer();
 
             for (ItemStack stack : player.inventory.mainInventory) {
                 if (!stack.isEmpty() && stack.getItem() == TTFeatures.coinPouch) {

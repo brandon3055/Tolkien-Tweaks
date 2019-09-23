@@ -1,5 +1,7 @@
 package com.brandon3055.tolkientweaks.client;
 
+import codechicken.lib.reflect.ObfMapping;
+import codechicken.lib.reflect.ReflectionManager;
 import com.brandon3055.brandonscore.handlers.HandHelper;
 import com.brandon3055.tolkientweaks.TTFeatures;
 import net.minecraft.client.gui.*;
@@ -35,13 +37,17 @@ public class ClientEventHandler {
 
 			try
 			{
-				Field parentGui = ReflectionHelper.findField(GuiShareToLan.class, "field_146598_a", "lastScreen");
-				parentGui.setAccessible(true);
+//				Field parentGui = ReflectionHelper.findField(GuiShareToLan.class, "field_146598_a", "lastScreen");
+//				parentGui.setAccessible(true);
+//
+//				Object parent = parentGui.get(gui);
 
-				Object parent = parentGui.get(gui);
-				event.setGui(new GuiLane((GuiIngameMenu)parent));
+				ObfMapping bufferMapping = new ObfMapping("net/minecraft/client/gui/GuiShareToLan", "lastScreen");
+				GuiScreen parent = ReflectionManager.getField(bufferMapping, gui, GuiScreen.class);
+
+				event.setGui(new GuiLane(parent));
 			}
-			catch (IllegalAccessException e)
+			catch (Throwable e)
 			{
 				e.printStackTrace();
 			}
