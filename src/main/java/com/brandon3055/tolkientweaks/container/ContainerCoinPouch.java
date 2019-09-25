@@ -64,7 +64,7 @@ public class ContainerCoinPouch extends Container {
 
                             for (int id : ids) {
                                 String name = OreDictionary.getOreName(id);
-                                if (name.equals("itemCoin") || name.equals("itemToken") ) {
+                                if (name.equals("itemCoinBronze") || name.equals("itemCoinSilver") || name.equals("itemCoinGold") || name.equals("itemCoinMithril") || name.equals("itemCoinFaction") || name.equals("itemTokenFaction") || name.equals("itemTokenEast") || name.equals("itemTokenWest") || name.equals("itemTokenSigil") || name.equals("itemTokenCave") || name.equals("itemTokenWatcher") ) {
                                     return true;
                                 }
                             }

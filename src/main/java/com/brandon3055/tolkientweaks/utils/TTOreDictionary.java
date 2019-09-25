@@ -11,10 +11,10 @@ public class TTOreDictionary {
     }
 
     private static void addOreRegistration(){
-        OreDictionary.registerOre("itemToken", new ItemStack(TTFeatures.eastToken));
-        OreDictionary.registerOre("itemToken", new ItemStack(TTFeatures.westToken));
-        OreDictionary.registerOre("itemCoin", new ItemStack(TTFeatures.brons_coin));
-        OreDictionary.registerOre("itemCoin", new ItemStack(TTFeatures.silver_coin));
-        OreDictionary.registerOre("itemCoin", new ItemStack(TTFeatures.gold_coin));
+        OreDictionary.registerOre("itemTokenEast", new ItemStack(TTFeatures.eastToken));
+        OreDictionary.registerOre("itemTokenWest", new ItemStack(TTFeatures.westToken));
+        OreDictionary.registerOre("itemCoinBronze", new ItemStack(TTFeatures.brons_coin));
+        OreDictionary.registerOre("itemCoinSilver", new ItemStack(TTFeatures.silver_coin));
+        OreDictionary.registerOre("itemCoinGold", new ItemStack(TTFeatures.gold_coin));
     }
 }
