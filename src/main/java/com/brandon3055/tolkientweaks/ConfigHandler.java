@@ -98,7 +98,7 @@ public class ConfigHandler {
 			FileReader reader = new FileReader(chatCommandConfig);
 			JsonElement element = parser.parse(reader);
 			IOUtils.closeQuietly(reader);
-			if (!element.isJsonObject()) {
+			if (!element.isJsonArray()) {
 				LogHelper.error("Failed to load Chat Command config. Detected invalid config file.");
 				return;
 			}
